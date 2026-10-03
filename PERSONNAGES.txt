@@ -1,0 +1,284 @@
+================================================================
+ LUMO : LES ROUTES DE L'OR — BIBLE DE PRODUCTION : PERSONNAGES
+ (Fichier destiné aux IA de génération d'images ET aux artistes)
+================================================================
+
+► SPÉCIFICATIONS TECHNIQUES (tous les portraits)
+- Format final : PNG avec fond TRANSPARENT, 512x512 pixels
+- Cadre : buste en vue 3/4, regard orienté vers la DROITE
+  (le texte de dialogue est à droite du portrait dans le jeu)
+- Style maître : flat vector illustration, thick rounded dark
+  outlines, chibi proportions (large head, expressive eyes),
+  warm golden rim light from top-left, rich saturated colors,
+  afro-fantasy aesthetic, Amazigh geometric patterns details,
+  mobile game character portrait quality
+- Palette commune : indigo nuit #141b3d, ambre #ffd75e, or #ffce54,
+  orange #ff9a3c, terre #5c2e14, violet #b98cf0, vert #7ddf87
+
+► PROMPT MAÎTRE à préfixer à CHAQUE prompt ci-dessous :
+"2D flat vector game character portrait, chibi style, thick rounded
+outlines, golden rim light top-left, transparent background,
+afro-fantasy aesthetic, mobile game quality, bust shot facing right,"
+[prompt spécifique ici]
+--negative: photo, realistic, 3D render, text, watermark, blurry,
+extra fingers, complex photorealistic gradients
+
+► ORDRE DE PRIORITÉ DE PRODUCTION
+P1 : lumo, baba, eclipse, dihya  (visibles dans les 2 premières minutes)
+P2 : anansi, massiva, tanit, yennenga, kofi
+P3 : azizi, bida, mami, kossa, aube
+P4 : les 5 prêtres + 6 ennemis (utilisés plus tard)
+
+================================================================
+1. LUMO — Héroïne, guide de caravane (joueuse)
+================================================================
+CONTEXTE FR : Descendante des deux rives (père numide, mère du Sahel).
+Jeune femme de 20 ans, énergique et compatissante. Elle porte le
+tambour brisé de son grand-père en pendentif. C'est ELLE que le joueur
+incarne — son portrait doit inspirer confiance et courage.
+
+PROMPT EN : "young African heroine caravan guide named Lumo, 20 years
+old, warm brown skin, large expressive amber eyes, confident gentle
+smile, two-tone outfit: indigo-blue Amazigh draped tunic on left side
+with silver fibula brooch, golden-yellow West African bogolan wrap on
+right side with kente trim, broken golden drum pendant necklace with
+visible crack seam glowing faintly, dark coily hair with thin gold
+beads and a small eclipse-shaped hairpin, leather satchel strap across
+chest, small feather of a fennec tucked behind ear"
+
+VARIANTE SCÈNE FINALE (aube) : ajouter "dawn light from behind, warm
+hopeful expression, golden particles floating around"
+
+================================================================
+2. BABA KADER — Grand-père griot
+================================================================
+CONTEXTE FR : Le mentor. Vieux conteur aveugle d'un œil (voile gris sur
+l'œil gauche) qui a vu l'Éclipse venir. Chaleureux, mystérieux. Il
+remet le tambour brisé à Lumo dans l'intro.
+
+PROMPT EN : "elderly West African griot storyteller named Baba Kader,
+80 years old, deep wrinkles and kind weathered face, white beard,
+left eye covered by a pale grey cloth veil, right eye milky-gold and
+wise, colorful patchwork robe (indigo, ochre, faded crimson) with
+cowrie shell embroidery, broken talking drum with golden crack resting
+on his lap, knotted cord necklace with amber beads, small kora harp
+leaning on shoulder, serene knowing smile"
+
+================================================================
+3. PRINCE MASSIVA — ROI de Numidie (inspiré Massinissa)
+================================================================
+CONTEXTE FR : Roi-navigateur du Nord, descendant de Massinissa. Calme,
+royal, protecteur. Les commandes de la chaîne ÉCO viennent de lui.
+Il symbolise la rigueur romano-numide : colonnes blanches, blé, greniers.
+
+PROMPT EN : "regal Numidian king named Massiva, 45 years old, proud
+calm expression, short black beard with gold ring curls, white and
+terracotta draped robe with purple Amazigh geometric border stripes,
+large silver fibula brooch shaped like a horse head (Numidian cavalry
+symbol), thin golden diadem band with a single carnelian gem across
+forehead, white stone column necklace amulet, military cloak pinned
+on one shoulder, subtle wheat grain motif embroidery"
+
+================================================================
+4. MARCHANDE TANIT — Négociante caravane (inspirée de la déesse Tanit)
+================================================================
+CONTEXTE FR : Marchande aux mille caravanes, maline et charismatique.
+Elle commande la chaîne TRÉSORS. Son symbole (triangle + cercle) revient
+partout dans le jeu — le faire figurer sur ses bijoux.
+
+PROMPT EN : "charismatic African merchant queen named Tanit, 35 years
+old, sly confident smile, gold-honey skin, elaborate braided hair
+crowned with a small crescent moon diadem, layered beaded necklaces
+featuring the Tanit symbol (triangle above circle with two horizontal
+arms) as a large golden pendant, indigo-and-crimson merchant robes
+with Trade route map embroidery, balance scales hanging from her belt,
+golden hoop earrings, henna geometric patterns on hands"
+
+================================================================
+5. ÉCLAIREUSE YENNENGA — Guerrière cavalière (inspirée princesse Mossi)
+================================================================
+CONTEXTE FR : Éclaireuse de la piste du sel, directe et farouche.
+Commande la chaîne CRÉATURES. Toujours prête à partir au galop.
+
+PROMPT EN : "fierce African scout warrior princess named Yennenga, 25
+years old, determined eyes, athletic build, dark coily hair in high
+ponytail with bronze spearhead hairpin, leather-and-bronze light armor
+with green and gold Mossi-style geometric patterns, bow slung across
+back, quiver with fennec-tail fletched arrows, long spear in hand,
+small horse-tooth amulet necklace, war paint: three gold dots under
+right eye, weathered travel cloak"
+
+================================================================
+6. CHRONIQUEUR ANANSI — Araignée filou (folklore akan)
+================================================================
+CONTEXTE FR : Esprit-araignée conteur, malicieux, tisseur d'histoires.
+Il apparaît mi-homme mi-araignée. C'est le personnage "comic relief"
+mais qui sait des choses. Voix railleuse, patte d'araignée élégante.
+
+PROMPT EN : "trickster spider-spirit chronicler named Anansi, hybrid
+form: elegant upper body of a slender African man with playful smirk,
+six additional slender spider legs of polished ebony emerging from
+lower back like a fan, wearing a colorful kente-patterned vest and
+ascot, small round spectacles, holding an ink quill made of spider
+silk, eight small golden story-beads floating around him, mischievous
+golden eyes with hourglass pupils, top hat made of woven web"
+
+================================================================
+7. FORGERON KOFI — Forgeron sacré (inspiré d'Ogun)
+================================================================
+CONTEXTE FR : Forgeron des deux mondes, cordial, colérique du feu
+sacré. Commande TRÉSORS de forge. Ses apprentis parlent en rythme.
+
+PROMPT EN : "powerful jovial West African blacksmith named Kofi, 50
+years old, muscular build, soot-smudged cheeks and big warm laugh,
+bald head with iron band, heavy leather apron covered in tool marks
+and red-and-white Adinkra symbol stamps, thick arms with copper and
+iron bangles, massive ornate hammer resting on shoulder, small forge
+flame dancing on his open palm (sacred fire), red scarf around neck,
+one earring shaped like an anvil"
+
+================================================================
+8. DIHYA — Reine des Aurès (inspirée de Kahina)
+================================================================
+CONTEXTE FR : Reine-prophétesse berbère des montagnes de l'Est, libérée
+dans la région Timgad. Fière, visionnaire. Alliée : +10% d'or.
+
+PROMPT EN : "majestic Amazigh (Berber) warrior queen named Dihya, 40
+years old, piercing prophetic eyes with silver fire pupils, long black
+wavy hair with silver coin jewelry woven in, flowing white-and-silver
+Amazigh robes with red geometric Berber tattoos on chin and forehead,
+large silver fibulae clasping the cloak, desert falcon perched on
+shoulder, oracle prophecies glowing faintly as golden script floating
+around her free hand, silver diadem with triangular amazigh symbol"
+
+================================================================
+9. AZIZI — Djinn des Sables
+================================================================
+CONTEXTE FR : Esprit du vent libéré à l'Oasis de Sel. Farceur
+bienveillant, fait de brume et de sable. Allié : énergie +25%.
+
+PROMPT EN : "playful sand djinn named Azizi, ethereal spirit whose
+lower body dissolves into a swirling funnel of golden sand and
+turquoise mist, upper body of a young man with sky-blue skin, big
+grin with a gold tooth, eyes like twin oases, dressed in a sleeveless
+teal vest with silver desert pattern embroidery, small cyclone of
+sand orbiting one hand, tiny palm oasis floating above the other,
+shimmering turquoise and gold color palette, wisps of cool vapor"
+
+================================================================
+10. BIDA — Serpent Arc-en-Ciel
+================================================================
+CONTEXTE FR : Serpent sacré de Wagadu, gardien du fleuve du récit.
+Sage, mystérieux, siffle en parlant. Allié : +15% XP.
+
+PROMPT EN : "majestic rainbow serpent spirit named Bida, giant snake
+with iridescent scales shimmering through all seven rainbow colors,
+long elegant serpentine body coiled gracefully, gentle ancient face
+with golden eyes and wise whiskers, small golden drums embedded in
+its scales that beat softly, glowing golden script of old stories
+flowing along its body like a river, faint rainbow aura, gold coins
+scattered where its tail touches ground"
+
+================================================================
+11. MAMI WATA — Esprit des Eaux
+================================================================
+CONTEXTE FR : Divinité des eaux, libérée à la Boucle du Fleuve.
+Imposante et apaisante. Alliée : +15% ATK.
+
+PROMPT EN : "regal water spirit Mami Wata, powerful African woman
+upper body with deep blue-black skin, long flowing hair made of
+living river water with small fish swimming inside, serpent fish
+lower body with iridescent blue-green scales, crown of freshwater
+pearls and river reeds, holding a golden mirror in one hand and a
+bell in the other, calm commanding expression, gentle waves swirling
+around her, bioluminescent water droplets floating"
+
+================================================================
+12. KOSSA — Tambour Vivant
+================================================================
+CONTEXTE FR : Esprit du rythme libéré dans la Forêt des Tambours.
+Explosif, joyeux, parle en BOUM-boum. Allié : 20% de taps gratuits.
+
+PROMPT EN : "explosive joyful living drum spirit named Kossa, body
+made of a large djembe drum (carved wooden body with bogolan mudcloth
+patterns and green forest moss), arms and legs made of drumsticks,
+big round head with glowing ember eyes and huge laughing mouth,
+leather drum skin chest that ripples with visible sound waves,
+small green leaves sprouting from joints, rhythm notes (golden
+musical sparks) popping around him, dynamic bouncing pose"
+
+================================================================
+13. L'AUBE — La Déesse renaissante (fin du jeu)
+================================================================
+CONTEXTE FR : L'entité qui naît quand le Réseau est restauré.
+C'est le "vrai visage" de la victoire. Sereine, rayonnante.
+
+PROMPT EN : "radiant goddess of dawn named L'Aube, serene African
+woman made of golden sunrise light, translucent form with warm amber
+glow, hair flowing upward as rays of morning sun, gentle closed-eye
+smile, wearing a simple white gown that transitions from indigo night
+at the hem to blazing gold at the shoulders, two tiny shores (a stone
+column and a baobab tree) floating in her open palms, golden dust
+particles, crescent-shaped eclipse behind her head like a halo"
+
+================================================================
+14. L'ÉCLIPSE — L'antagoniste (dévoreuse d'histoires)
+================================================================
+CONTEXTE FR : Entité froide qui dévore les récits. Elle n'a pas de
+vrai visage : c'est un voile de nuit avec une couronne de silence.
+Menace sans crier. Son arme : l'oubli.
+
+PROMPT EN : "terrifying entity of the Eclipse, a dark humanoid
+silhouette made of devouring black void with faint purple eclipse
+corona behind its head, no face except two thin glowing white
+horizontal eye-slits like a crescent moon closing, torn royal robes
+of faded midnight indigo with bleeding gold script (stolen stories)
+dissolving into ash at the edges, long fingers leaving trails of
+fading ink where they touch, silent oppressive aura, floating crown
+of broken pages orbiting its head, cold violet and void-black palette"
+
+================================================================
+15. LES 5 PRÊTRES DE L'ÉCLIPSE (mini-boss de région)
+================================================================
+Style commun EN : "Eclipse cultist priest, gaunt figure in layered
+dark robes with purple eclipse insignia, face hidden by [VARIANTE],
+cold violet aura, floating" — remplacer [VARIANTE] par :
+- Prêtre des Cendres : "a cracked ash-white funeral mask, soot
+  particles falling" (région Timgad)
+- Prêtre du Mirage : "a shimmering glass mask that reflects fake
+  oases" (région Oasis)
+- Prêtre du Silence : "a smooth faceless void mask, sound waves
+  dying around him" (région Wagadu)
+- Prêtre des Crues : "a waterlogged mask of drowned wood, dripping
+  dark water" (région Fleuve)
+- Prêtre des Racines : "a mask grown over with gnarled dark roots"
+  (région Forêt)
+
+================================================================
+16. LES 6 ENNEMIS DE COMBAT (voir aussi ITEMS_SPRITES.txt section E)
+================================================================
+- Ombre Errante : "shadow bat-creature made of torn black cloth and
+  fading memories, glowing thin white eyes"
+- Scorpion d'Ombre : "obsidian scorpion with violet eclipse marking
+  on back, dripping shadow venom"
+- Serpent du Néant : "void serpent, scales of absolute black with
+  faint purple constellation patterns"
+- Spectre de Sel : "ghostly figure made of crumbling white salt
+  crystals, hollow eyes"
+- Dévorant des Dunes : "massive sand worm with eclipse-marked maw,
+  dune armor plates"
+- Avatar de l'Éclipse : "the Eclipse entity itself, smaller avatar
+  form" (voir fiche 14)
+
+================================================================
+NOTES DE COHÉRENCE POUR TOUTES LES GÉNÉRATIONS
+================================================================
+- Les personnages du NORD (Massiva, Dihya, Lumo côté gauche) : motifs
+  géométriques amazighs, argent + terre cuite, drapés.
+- Les personnages du SUD (Tanit, Yennenga, Kofi, Kossa) : textiles
+  bogolan/kente, or + cuivre, perles de caurie.
+- Les esprits (Azizi, Bida, Mami, Anansi, L'Aube) : transparence,
+  aura lumineuse, palette au-delà du terrestre.
+- Les serviteurs de l'Éclipse : TOUJOURS violet/void + corona
+  d'éclipse + motif d'encre qui s'efface.
+================================================================
