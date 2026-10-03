@@ -3,12 +3,11 @@
 
 const DATA = {
 
-  // ===== SPRITESHEETS (fichiers optionnels : si absents → emojis) =====
   sprites: {
-    itemsSheet: "assets/sprites/items.png", // 10 col × 3 rangées, cellules 128×128
+    itemsSheet: "assets/sprites/items.png",
     cols: 10, rows: 3,
     rowOrder: ["eco", "creatures", "utility"],
-    enemiesSheet: "assets/sprites/enemies.png" // 6 col × 1 rangée, cellules 128×128
+    enemiesSheet: "assets/sprites/enemies.png"
   },
 
   chains: {
@@ -84,7 +83,6 @@ const DATA = {
   ],
   lockBaseCost: 20,
 
-  // ===== LA ROUTE DE L'OR — Régions à fonder & Gardiens à purifier =====
   regions: [
     { id: "timgad", icon: "🏛️",
       fr: "Timgad, la Porte du Nord", en: "Timgad, Gate of the North",
@@ -124,7 +122,7 @@ const DATA = {
       gradient: "linear-gradient(170deg,#0a1f24 0%,#114b46 55%,#17705b 100%)",
       bg: "assets/bg_fleuve.png",
       bonus_fr: "+15% ATK des Esprits", bonus_en: "+15% Spirit ATK",
-      lore_fr: "Les Crues noyaient les ports de Tombouctou. Mami Wata, libérée, apaise le fleuve et Double son or.",
+      lore_fr: "Les Crues noyaient les ports de Tombouctou. Mami Wata, libérée, apaise le fleuve et double son or.",
       lore_en: "The Floods drowned Timbuktu's ports. Freed, Mami Wata soothes the river and doubles its gold." },
     { id: "foret", icon: "🌳",
       fr: "La Forêt des Tambours", en: "The Drum Forest",
@@ -147,6 +145,100 @@ const DATA = {
       lore_fr: "Sur le Trône, l'Éclipse elle-même attendait. Brise-la : les deux rives ne feront plus qu'un dans l'Aube.",
       lore_en: "Upon the Throne, the Eclipse itself waited. Shatter it: both shores will become one in the Dawn." }
   ],
+
+  // ===== SCÈNES NARRATIVES (thème : Fusionner = Raconter) =====
+  scenes: {
+    intro: {
+      gradient: "linear-gradient(170deg,#1a1430 0%,#4a2418 60%,#7a3d1a 100%)",
+      bg: "assets/bg_timgad.png",
+      caravan: true,
+      reward: { coins: 25, xp: 5 },
+      lines: [
+        { who: "narr", fr: "Il y a mille ans, les deux rives ne faisaient qu'un : au Nord, les pierres blanches de Numidie ; au Sud, les tambours d'or du Sahel.",
+          en: "A thousand years ago, both shores were one: in the North, the white stones of Numidia; in the South, the golden drums of the Sahel." },
+        { who: "narr", fr: "Puis vint l'Éclipse — celle qui dévore les histoires. Car ce qui n'est plus raconté finit par disparaître.",
+          en: "Then came the Eclipse — she who devours stories. For what is no longer told eventually fades away." },
+        { who: "baba", fr: "Petite... ce tambour portait toutes les routes du monde. L'Éclipse l'a brisé. Il n'en reste que des fragments.",
+          en: "Little one... this drum carried all the roads of the world. The Eclipse broke it. Only fragments remain." },
+        { who: "baba", fr: "Fusionne ces fragments : deux morceaux d'histoire réunis font un récit plus grand. Recouds la Route, et l'Aube reviendra.",
+          en: "Merge those fragments: two pieces of history joined make a greater tale. Sew the Route back, and the Dawn will return." },
+        { who: "lumo", fr: "Deux fragments... une seule histoire. J'ai compris, grand-père. Je ramènerai l'Aube.",
+          en: "Two fragments... one story. I understand, grandfather. I will bring back the Dawn." },
+        { who: "narr", style: "chap", fr: "CHAPITRE I — La Porte du Nord",
+          en: "CHAPTER I — The Gate of the North" }
+      ]
+    },
+    region_timgad: {
+      gradient: "linear-gradient(170deg,#1a1430 0%,#4a2418 60%,#7a3d1a 100%)",
+      lines: [
+        { who: "dihya", fr: "Merci, guide des caravanes. Le Prêtre des Cendres gardait mes fourriers prisonniers de la suie...",
+          en: "Thank you, caravan guide. The Ash Priest kept my beacon fires prisoner in soot..." },
+        { who: "dihya", fr: "Désormais : +10% d'or sur toute la Route. Timgad redevient la porte du Nord !",
+          en: "From now on: +10% gold along the whole Route. Timgad is the gate of the North again!" },
+        { who: "lumo", fr: "Cinq terres encore sous l'Éclipse. En route !",
+          en: "Five lands still under the Eclipse. Onward!" }
+      ]
+    },
+    region_oasis: {
+      gradient: "linear-gradient(170deg,#0d1f2d 0%,#14504d 60%,#1a6b52 100%)",
+      lines: [
+        { who: "azizi", fr: "Ahhh ! Libre après mille dunes ! Le Mirage m'avait enroulé dans un mensonge de brume...",
+          en: "Ahhh! Free after a thousand dunes! The Mirage had wrapped me in a lie of mist..." },
+        { who: "azizi", fr: "Ton énergie coulera désormais 25% plus vite. Les vents sont à ton service, petite tisseuse !",
+          en: "Your energy will now flow 25% faster. The winds are at your service, little weaver!" }
+      ]
+    },
+    region_wagadu: {
+      gradient: "linear-gradient(170deg,#241a10 0%,#5c4416 55%,#8a6a1e 100%)",
+      lines: [
+        { who: "bida", fr: "Sssss... Le Silence avait figé les tambours d'or de Wagadu. Écoute : ça bat à nouveau !",
+          en: "Sssss... Silence had frozen Wagadu's golden drums. Listen: they beat again!" },
+        { who: "bida", fr: "+15% d'XP sur toute la Route. Que chaque pas devienne une histoire.",
+          en: "+15% XP along the whole Route. May every step become a story." }
+      ]
+    },
+    region_fleuve: {
+      gradient: "linear-gradient(170deg,#0a1f24 0%,#114b46 55%,#17705b 100%)",
+      lines: [
+        { who: "mami", fr: "Les Crues n'avaient plus de cœur, petit guide. Tu viens d'en rendre un au fleuve.",
+          en: "The Floods had lost their heart, little guide. You have just given one back to the river." },
+        { who: "mami", fr: "Tes Esprits frapperont 15% plus fort. Les eaux se souviennent de ton nom.",
+          en: "Your Spirits will strike 15% harder. The waters remember your name." }
+      ]
+    },
+    region_foret: {
+      gradient: "linear-gradient(170deg,#0c1e0f 0%,#14401c 55%,#1d5c2a 100%)",
+      lines: [
+        { who: "kossa", fr: "BOUM-boum-BOUM ! Tu m'as rendu mon rythme ! Mille saisons sans tambour... mais c'est fini !",
+          en: "BOOM-boom-BOOM! You gave me back my rhythm! A thousand seasons without a drum... but no more!" },
+        { who: "kossa", fr: "Un tap sur cinq est gratuit, à présent. La forêt forge avec toi !",
+          en: "One tap in five is free, from now on. The forest forges with you!" }
+      ]
+    },
+    region_trone: {
+      gradient: "linear-gradient(170deg,#0a0614 0%,#2a1140 55%,#451a55 100%)",
+      reward: { coins: 500, xp: 50 },
+      lines: [
+        { who: "eclipse", fr: "Non... Tu recouds ? Les histoires que je dévore... reviennent ?!",
+          en: "No... You are sewing? The stories I devoured... are coming back?!" },
+        { who: "lumo", fr: "Ce que tu avales revient toujours. Deux fragments font un récit. Deux rives font un monde.",
+          en: "What you swallow always returns. Two fragments make a tale. Two shores make a world." },
+        { who: "aube", fr: "Debout, Route de l'Or. L'Aube est là.",
+          en: "Rise, Gold Route. The Dawn is here." },
+        { who: "narr", style: "chap", fr: "FIN DU CHAPITRE I — Mais les caravanes ont mille autres contes à raviver...",
+          en: "END OF CHAPTER I — But the caravans hold a thousand more tales to relight..." }
+      ]
+    },
+    boss_10: {
+      gradient: "linear-gradient(170deg,#0a0614 0%,#2a1140 60%,#451a55 100%)",
+      lines: [
+        { who: "anansi", fr: "Héhéhé... Une Éclipse de la taille d'un serpent ! Tu grandis, petite tisseuse.",
+          en: "Hehehe... An Eclipse the size of a serpent! You are growing, little weaver." },
+        { who: "anansi", fr: "Les Prêtres vont te haïr. Continue : chaque histoire rendue à la lumière les affaiblit.",
+          en: "The Priests will hate you. Keep going: every story returned to the light weakens them." }
+      ]
+    }
+  },
 
   npcs: {
     massiva:  { emoji: "👑", fr: "Prince Massiva",       en: "Prince Massiva" },
@@ -216,15 +308,4 @@ const DATA = {
       fr: "La Caravane de l'Éclipse part à l'aube. Une Amphore d'Or scellera notre pacte avec les empires du Sud.",
       en: "The Eclipse Caravan leaves at dawn. A Golden Amphora will seal our pact with the empires of the South.",
       requires: [ { chain: "eco", level: 5, qty: 1 } ],
-      reward: { coins: 600, xp: 45 } }
-  ],
-
-  enemies: [
-    { minWave: 1,  emoji: "🦇", fr: "Ombre Errante",      en: "Wandering Shadow" },
-    { minWave: 5,  emoji: "🦂", fr: "Scorpion d'Ombre",   en: "Shadow Scorpion" },
-    { minWave: 10, emoji: "🐍", fr: "Serpent du Néant",    en: "Void Serpent" },
-    { minWave: 15, emoji: "💀", fr: "Spectre de Sel",      en: "Salt Spectre" },
-    { minWave: 20, emoji: "👹", fr: "Dévorant des Dunes",  en: "Dune Devourer" },
-    { minWave: 25, emoji: "🌑", fr: "Avatar de l'Éclipse", en: "Eclipse Avatar" }
-  ]
-};
+     
