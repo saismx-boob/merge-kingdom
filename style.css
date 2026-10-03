@@ -59,14 +59,30 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
   position: relative;
+  overflow: hidden; /* Empêche le débordement */
 }
 
 .cell.highlight { border-color: #ffd700; background: rgba(255,215,0,0.15); }
 
-.creature { cursor: grab; }
+/* Conteneur de l'image/emoji */
+.creature { 
+  cursor: grab; 
+  width: 100%; 
+  height: 100%; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
 .creature.dragging { opacity: 0.3; }
+
+/* L'image s'adapte à la case avec une marge */
+.creature img {
+  width: 85%;
+  height: 85%;
+  object-fit: contain;
+  pointer-events: none; /* Évite les conflits de drag */
+}
 
 #ghost {
   position: fixed;
@@ -76,6 +92,9 @@ body {
   transform: translate(-50%, -50%);
   display: none;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .lvl-badge {
@@ -88,6 +107,7 @@ body {
   border-radius: 6px;
   padding: 1px 4px;
   font-weight: bold;
+  z-index: 10;
 }
 
 footer { padding: 14px; text-align: center; }
@@ -153,6 +173,7 @@ footer { padding: 14px; text-align: center; }
   position: relative;
 }
 .fighter .emoji { font-size: 40px; display: block; }
+.fighter img { width: 40px; height: 40px; object-fit: contain; display: block; margin: 0 auto; }
 .fighter .hp-bar {
   height: 6px;
   background: rgba(255,255,255,0.2);
