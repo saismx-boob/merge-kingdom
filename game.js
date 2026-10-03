@@ -603,4 +603,19 @@ if (buyEnergyBtn) buyEnergyBtn.addEventListener("click", () => {
 
 // ----- Histoire (modale récap classique) -----
 const storyModal = document.getElementById("story-modal");
-function s
+function showStory() { if (storyModal) storyModal.classList.remove("hidden"); }
+function closeStory() { if (storyModal) storyModal.classList.add("hidden"); }
+if (storyBtn) storyBtn.addEventListener("click", showStory);
+if (storyCloseBtn) storyCloseBtn.addEventListener("click", closeStory);
+
+// ----- Initialisation (protégée) -----
+try {
+  initSprites();
+  renderGenerators();
+  setLanguage(currentLang);
+  render();
+} catch (e) {
+  console.error("Erreur d'initialisation:", e);
+}
+
+// --- FIN game.js v3.1 ---
