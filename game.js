@@ -1,8 +1,8 @@
 // ===== LES ROUTES DE L'OR — Moteur (grille, énergie, commandes, XP) =====
 
 const SIZE_COLS = 7, SIZE_ROWS = 7, SIZE = SIZE_COLS * SIZE_ROWS; // 49 cases
-const ENERGY = { max: 50, regenMs: 120000, start: 30 }; // 1 ⚡ / 2 min
-const BUY_ENERGY = { amount: 5, cost: 30 };
+const ENERGY = { max: 80, regenMs: 45000, start: 40 }; // 1 ⚡ / 45 s
+const BUY_ENERGY = { amount: 10, cost: 40 };
 const MAX_LEVEL = 10;
 const SAVE_KEY = "routesDeLor_v1";
 
@@ -52,7 +52,7 @@ function playerLevel() {
 }
 function addXp(n) { state.xp += n; }
 
-// ----- Énergie -----
+// ----- Énergie (gère aussi le hors-ligne) -----
 function tickEnergy() {
   if (state.energy >= ENERGY.max) { state.energyTs = Date.now(); return; }
   const gained = Math.floor((Date.now() - state.energyTs) / ENERGY.regenMs);
@@ -90,6 +90,9 @@ function getUtilityBoost() {
   return state.grid.reduce((sum, it) =>
     it && it.chain === "utility" ? sum + DATA.chains.utility.items[it.level - 1].boost : sum, 0);
 }
+function emptyCells() {
+  return state.grid.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+}
 
 // ----- Rendu -----
 const board = document.getElementById("board");
@@ -109,6 +112,7 @@ function renderHud() {
   const rem = state.xp - xpTotalBefore(lvl);
   document.getElementById("level-num").textContent = lvl;
   document.getElementById("xp-fill").style.width = Math.min(100, rem / xpNeeded(lvl) * 100) + "%";
+  document.getElementById("buy-energy-btn").textContent = "+" + BUY_ENERGY.amount;
   document.getElementById("buy-energy-btn").disabled =
     state.coins < BUY_ENERGY.cost || state.energy >= ENERGY.max;
 }
@@ -134,14 +138,14 @@ function renderBoard() {
       if (item.chain === 'eco') c.classList.add('anim-eco');
       if (item.chain === 'utility') c.classList.add('anim-util');
 
+      // L'emoji est la base ; si une image existe elle vient se superposer
+      c.textContent = data.emoji;
       if (data.img) {
         const img = document.createElement("img");
         img.src = data.img;
-        img.alt = data.emoji;
-        img.onerror = function () { this.remove(); c.textContent = data.emoji; };
+        img.alt = "";
+        img.onload = function () { c.textContent = ''; c.appendChild(img); };
         c.appendChild(img);
-      } else {
-        c.textContent = data.emoji;
       }
 
       const badge = document.createElement("span");
@@ -156,6 +160,27 @@ function renderBoard() {
 }
 
 // ----- Générateurs (3, un par chaîne) -----
+function spawnFromGenerator(chain) {
+  const empties = emptyCells();
+  if (state.energy < 1 || !empties.length) return;
+
+  state.energy -= 1;
+  let idx = empties[Math.floor(Math.random() * empties.length)];
+  state.grid[idx] = { chain, level: rollDropLevel() };
+  createSparkles(board.children[idx]);
+
+  // Item bonus occasionnel → la grille se remplit plus vite
+  if (Math.random() < (DATA.bonusSpawnChance || 0)) {
+    const rest = emptyCells();
+    if (rest.length) {
+      const idx2 = rest[Math.floor(Math.random() * rest.length)];
+      state.grid[idx2] = { chain, level: 1 };
+    }
+  }
+
+  save(); render();
+}
+
 function renderGenerators() {
   const row = document.getElementById("gen-row");
   row.innerHTML = "";
@@ -164,14 +189,7 @@ function renderGenerators() {
     b.className = "gen-btn";
     b.id = g.id;
     b.innerHTML = g.icon + " " + dl(g) + "<small>⚡ 1</small>";
-    b.addEventListener("click", () => {
-      if (state.energy < 1 || !state.grid.includes(null)) return;
-      state.energy -= 1;
-      const empty = state.grid.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
-      const idx = empty[Math.floor(Math.random() * empty.length)];
-      state.grid[idx] = { chain: g.chain, level: rollDropLevel() };
-      save(); render();
-    });
+    b.addEventListener("click", () => spawnFromGenerator(g.chain));
     row.appendChild(b);
   });
   updateGenButtons();
@@ -260,7 +278,6 @@ function claimOrder(slot) {
   o.requires.forEach(r => removeItems(r.chain, r.level, r.qty));
   state.coins += o.reward.coins;
   addXp(o.reward.xp);
-  state.orders[slot] = -1;
   state.orders[slot] = pickOrder();
   save(); render();
 }
@@ -412,4 +429,5 @@ if (!state.seenIntro) {
   showStory();
   state.seenIntro = true;
   save();
-        }
+}
+  
