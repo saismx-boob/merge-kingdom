@@ -1,9 +1,7 @@
-// ===== LES ROUTES DE L'OR — Moteur de Récit (dialogues & cinématiques) =====
-// Les scènes vivent dans DATA.scenes (data.js).
-// Portraits dessinés (optionnels) : assets/portraits/<who>.png → fallback emoji.
+// ===== LES ROUTES DE L'OR — Moteur de Récit (v2 corrigée) =====
 
 const CAST = {
-  narr:     { emoji: "✨",   fr: "Le Griot",            en: "The Griot" },
+  narr:     { emoji: "✨",   narr: true, fr: "Le Griot",     en: "The Griot" },
   lumo:     { emoji: "🌟",   fr: "Lumo",                en: "Lumo" },
   baba:     { emoji: "👴",   fr: "Baba Kader",          en: "Baba Kader" },
   massiva:  { emoji: "👑",   fr: "Prince Massiva",      en: "Prince Massiva" },
@@ -26,13 +24,13 @@ const STORY_UI = {
 };
 
 const Story = (function () {
-  let overlay, bgEl, caravan, skipBtn, portraitBox, nameEl, textEl, hintEl;
+  let overlay = null, bgEl = null, caravan = null, skipBtn = null;
+  let portraitBox = null, nameEl = null, textEl = null, hintEl = null;
   let lines = [], idx = 0, typeTimer = null, lineDone = false;
   let sceneId = null, onFinish = null;
 
   function seen(id) {
-    if (!Array.isArray(state.seenScenes)) state.seenScenes = [];
-    return state.seenScenes.includes(id);
+    return Array.isArray(state.seenScenes) && state.seenScenes.includes(id);
   }
   function markSeen(id) {
     if (!Array.isArray(state.seenScenes)) state.seenScenes = [];
@@ -40,6 +38,7 @@ const Story = (function () {
   }
 
   function injectDOM() {
+    if (overlay) return; // déjà injecté
     overlay = document.createElement("div");
     overlay.id = "story-overlay";
     overlay.className = "hidden";
@@ -83,17 +82,22 @@ const Story = (function () {
   }
 
   function play(id, cb) {
-    const scene = DATA.scenes && DATA.scenes[id];
+    injectDOM(); // ← LE FIX CRUCIAL : toujours s'assurer que le DOM existe
+    const scene = (DATA.scenes && DATA.scenes[id]) ? DATA.scenes[id] : null;
     if (!scene || seen(id)) { if (cb) cb(); return; }
     sceneId = id; onFinish = cb || null;
     lines = scene.lines.slice(); idx = 0;
 
-    // Fond : image si disponible, sinon dégradé de secours
     bgEl.style.backgroundImage = "none";
     bgEl.style.background = scene.gradient || "linear-gradient(170deg,#141b3d,#3b2140,#5c2e14)";
     if (scene.bg) {
       const im = new Image();
-      im.onload = () => { bgEl.style.background = "none"; bgEl.style.backgroundImage = "url('" + scene.bg + "')"; };
+      im.onload = () => {
+        if (sceneId === id) {
+          bgEl.style.background = "none";
+          bgEl.style.backgroundImage = "url('" + scene.bg + "')";
+        }
+      };
       im.src = scene.bg;
     }
     caravan.style.display = scene.caravan ? "block" : "none";
@@ -105,13 +109,13 @@ const Story = (function () {
 
   function showLine() {
     const line = lines[idx];
+    if (!line) { finish(); return; }
     const who = CAST[line.who] || CAST.narr;
     const isChap = line.style === "chap";
 
     nameEl.textContent = dl(who);
     portraitBox.className = "story-portrait" + (who.narr ? " narr" : "");
 
-    // Portrait dessiné sinon emoji
     portraitBox.innerHTML = "";
     const em = document.createElement("span");
     em.className = "story-emoji";
@@ -121,7 +125,7 @@ const Story = (function () {
       const im = new Image();
       im.src = "assets/portraits/" + line.who + ".png";
       im.onload = function () {
-        if (lines[idx] === line) {
+        if (lines[idx] === line && portraitBox) {
           portraitBox.innerHTML = "";
           im.className = "story-emoji";
           portraitBox.appendChild(im);
@@ -135,24 +139,31 @@ const Story = (function () {
     hintEl.style.opacity = "0";
     lineDone = false;
 
-    clearInterval(typeTimer);
+    if (typeTimer) clearInterval(typeTimer);
     let i = 0;
     typeTimer = setInterval(() => {
-      i += 2; // 2 chars/tick = plus fluide sur mobile
+      i += 2;
       textEl.textContent = full.slice(0, i);
-      if (i >= full.length) { clearInterval(typeTimer); typeTimer = null; lineDone = true; hintEl.textContent = STORY_UI[currentLang].hint; hintEl.style.opacity = "1"; }
+      if (i >= full.length) {
+        clearInterval(typeTimer); typeTimer = null; lineDone = true;
+        hintEl.textContent = STORY_UI[currentLang].hint;
+        hintEl.style.opacity = "1";
+      }
     }, 14);
   }
 
   function advance() {
-    if (!overlay.classList.contains("hidden") === false) return;
-    if (typeTimer) { // compléter la ligne instantanément
+    if (!overlay || overlay.classList.contains("hidden")) return;
+    if (!lineDone && typeTimer) {
+      // compléter la ligne instantanément
       clearInterval(typeTimer); typeTimer = null;
       const line = lines[idx];
-      textEl.textContent = currentLang === "fr" ? line.fr : line.en;
-      lineDone = true;
-      hintEl.textContent = STORY_UI[currentLang].hint;
-      hintEl.style.opacity = "1";
+      if (line) {
+        textEl.textContent = currentLang === "fr" ? line.fr : line.en;
+        lineDone = true;
+        hintEl.textContent = STORY_UI[currentLang].hint;
+        hintEl.style.opacity = "1";
+      }
       return;
     }
     idx++;
@@ -161,7 +172,8 @@ const Story = (function () {
   }
 
   function finish() {
-    if (typeTimer) clearInterval(typeTimer);
+    if (typeTimer) { clearInterval(typeTimer); typeTimer = null; }
+    if (!overlay || !sceneId) return;
     markSeen(sceneId);
     const scene = DATA.scenes[sceneId];
     if (scene && scene.reward) {
@@ -169,25 +181,29 @@ const Story = (function () {
       if (scene.reward.xp) addXp(scene.reward.xp);
     }
     overlay.classList.add("hidden");
-    save(); render();
+    save();
+    if (typeof render === 'function') try { render(); } catch (e) {}
     const cb = onFinish; sceneId = null; onFinish = null;
     if (cb) cb();
   }
 
-  // Déclencheurs automatiques (vérifié toutes les 4 s)
+  // Déclencheur auto : Anansi à la vague 10
   function watch() {
-    if (!DATA.scenes || !overlay || !overlay.classList.contains("hidden")) return;
+    if (!overlay || !overlay.classList.contains("hidden")) return; // scène en cours
     if (state.wave >= 10 && !seen("boss_10")) play("boss_10");
   }
   setInterval(watch, 4000);
 
-  // Boot
+  // Boot : intro cinématique au premier lancement
   setTimeout(() => {
-    if (!state.seenIntro) {
-      if (typeof closeStory === "function") closeStory(); // ferme l'ancienne modale statique
-      play("intro");
-      state.seenIntro = true; save();
-    }
+    try {
+      if (!state.seenIntro) {
+        if (typeof closeStory === "function") closeStory();
+        play("intro");
+        state.seenIntro = true;
+        save();
+      }
+    } catch (e) { console.warn("Story boot:", e); }
   }, 700);
 
   return { play, advance };
@@ -196,6 +212,7 @@ const Story = (function () {
 // Tap n'importe où sur l'overlay = avancer
 document.addEventListener("pointerup", e => {
   const ov = document.getElementById("story-overlay");
-  if (ov && !ov.classList.contains("hidden") && !e.target.closest(".story-skip")) Story.advance();
+  if (ov && !ov.classList.contains("hidden") && !e.target.closest(".story-skip")) {
+    Story.advance();
+  }
 });
-    
