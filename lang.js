@@ -1,4 +1,4 @@
-// ===== SYSTÈME DE LANGUE (FR / EN) =====
+// ===== SYSTÈME DE LANGUE (FR / EN) — null-safe =====
 
 const TRANSLATIONS = {
   fr: {
@@ -86,26 +86,35 @@ const TRANSLATIONS = {
 let currentLang = localStorage.getItem("lumoLang") || "fr";
 
 function t(key) {
-  return TRANSLATIONS[currentLang][key] || TRANSLATIONS.fr[key] || key;
+  try {
+    return TRANSLATIONS[currentLang][key] || TRANSLATIONS.fr[key] || key;
+  } catch (e) { return key; }
+}
+
+// Helper null-safe : ne crashe jamais même si un élément manque
+function setEl(id, txt) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = txt;
 }
 
 function setLanguage(lang) {
   currentLang = lang;
   localStorage.setItem("lumoLang", lang);
-  document.getElementById("lang-label").textContent = lang.toUpperCase();
+  setEl("lang-label", lang.toUpperCase());
   document.title = t('title');
-  document.getElementById("nav-merge").textContent = t('nav_merge');
-  document.getElementById("nav-map").textContent = t('nav_map');
-  document.getElementById("nav-battle").textContent = t('nav_battle');
-  document.getElementById("orders-title").textContent = t('orders_title');
-  document.getElementById("hint").textContent = t('hint');
-  document.getElementById("fight-btn").textContent = t('btn_fight');
-  document.getElementById("map-title").textContent = t('map_title');
-  document.getElementById("story-title").textContent = t('story_title');
-  document.getElementById("story-text").innerHTML = t('story');
-  document.getElementById("story-close").textContent = t('story_close');
-  if (typeof render === 'function') render();
-  if (typeof renderGenerators === 'function') renderGenerators();
-  if (typeof renderMap === 'function') renderMap();
-  if (typeof setupBattle === 'function') setupBattle();
+  setEl("nav-merge", t('nav_merge'));
+  setEl("nav-map", t('nav_map'));
+  setEl("nav-battle", t('nav_battle'));
+  setEl("orders-title", t('orders_title'));
+  setEl("hint", t('hint'));
+  setEl("fight-btn", t('btn_fight'));
+  setEl("map-title", t('map_title'));
+  setEl("story-title", t('story_title'));
+  const st = document.getElementById("story-text");
+  if (st) st.innerHTML = t('story');
+  setEl("story-close", t('story_close'));
+  if (typeof render === 'function') try { render(); } catch (e) {}
+  if (typeof renderGenerators === 'function') try { renderGenerators(); } catch (e) {}
+  if (typeof renderMap === 'function') try { renderMap(); } catch (e) {}
+  if (typeof setupBattle === 'function') try { setupBattle(); } catch (e) {}
 }
