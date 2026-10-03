@@ -292,9 +292,6 @@ function addPop(i, text) {
 // ----- Générateurs -----
 function spawnFromGenerator(chain) {
   const empties = emptyCells();
-  if (state.energy < 1 && !(pur("foret") && Math.random() < 0.20)) {
-    if (state.energy < 1) return;
-  }
   if (!empties.length) return;
 
   const freeTap = pur("foret") && Math.random() < 0.20;
@@ -582,15 +579,21 @@ function switchScreen(name) {
   if (name === "battle" && typeof setupBattle === 'function') setupBattle();
 }
 
+// ----- Listeners (tous null-safe) -----
 const navMerge = document.getElementById("nav-merge");
 const navMap = document.getElementById("nav-map");
 const navBattle = document.getElementById("nav-battle");
+const langToggle = document.getElementById("lang-toggle");
+const buyEnergyBtn = document.getElementById("buy-energy-btn");
+const storyBtn = document.getElementById("story-btn");
+const storyCloseBtn = document.getElementById("story-close");
+
 if (navMerge) navMerge.addEventListener("click", () => switchScreen("merge"));
 if (navMap) navMap.addEventListener("click", () => switchScreen("map"));
 if (navBattle) navBattle.addEventListener("click", () => switchScreen("battle"));
-document.getElementById("lang-toggle").addEventListener("click",
+if (langToggle) langToggle.addEventListener("click",
   () => setLanguage(currentLang === "fr" ? "en" : "fr"));
-document.getElementById("buy-energy-btn").addEventListener("click", () => {
+if (buyEnergyBtn) buyEnergyBtn.addEventListener("click", () => {
   if (state.coins >= BUY_ENERGY.cost && state.energy < ENERGY.max) {
     state.coins -= BUY_ENERGY.cost;
     state.energy = Math.min(ENERGY.max, state.energy + BUY_ENERGY.amount);
@@ -600,6 +603,4 @@ document.getElementById("buy-energy-btn").addEventListener("click", () => {
 
 // ----- Histoire (modale récap classique) -----
 const storyModal = document.getElementById("story-modal");
-function showStory() { if (storyModal) storyModal.classList.remove("hidden"); }
-function closeStory() { if (storyModal) storyModal.classList.add("hidden"); }
-docum
+function s
