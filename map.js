@@ -2,10 +2,12 @@
 
 function renderMap() {
   const list = document.getElementById("map-list");
+  if (!list) return;
   list.innerHTML = "";
   const lvl = playerLevel();
 
-  document.getElementById("map-progress").textContent =
+  const prog = document.getElementById("map-progress");
+  if (prog) prog.textContent =
     t('map_progress') + " : " + state.purifiedRegions.length + " / " + DATA.regions.length;
 
   DATA.regions.forEach(r => {
@@ -94,5 +96,7 @@ function purifyRegion(id) {
   save(); render(); renderMap();
   showToast(r.freedEmoji + " " + dl({ fr: r.freed_fr, en: r.freed_en }) +
     t('toast_freed') + dl({ fr: r.bonus_fr, en: r.bonus_en }));
-  setTimeout(() => Story.play('region_' + id), 1000);
+  if (typeof Story !== 'undefined') {
+    setTimeout(() => Story.play('region_' + id), 1000);
+  }
 }
