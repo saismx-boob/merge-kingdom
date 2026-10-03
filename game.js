@@ -21,9 +21,10 @@ function defaultState() {
     energy: ENERGY.start, energyTs: Date.now(),
     wave: 1, seenIntro: false,
     grid: startingGrid(),
-    locks: DATA.lockMap.flat(),
+    locks: (typeof DATA !== 'undefined' && DATA.lockMap) ? DATA.lockMap.flat() : Array(SIZE).fill(0),
     unlockedRegions: ["timgad"],
     purifiedRegions: [],
+    seenScenes: [],
     orders: [0, 1, 2]
   };
 }
@@ -44,10 +45,11 @@ function load() {
     }
     if (!Array.isArray(s.unlockedRegions)) s.unlockedRegions = ["timgad"];
     if (!Array.isArray(s.purifiedRegions)) s.purifiedRegions = [];
+    if (!Array.isArray(s.seenScenes)) s.seenScenes = [];
     if (!Array.isArray(s.orders) || s.orders.length !== 3 ||
         s.orders.some(i => i < 0 || i >= DATA.orders.length)) s.orders = [0, 1, 2];
     return s;
-  } catch { return null; }
+  } catch (e) { return null; }
 }
 
 // ----- BONUS DES RÉGIONS PURIFIÉES -----
@@ -110,17 +112,19 @@ function getUtilityBoost() {
 // ----- SPRITESHEETS (détection automatique) -----
 const SPR = { items: false, enemies: false };
 function initSprites() {
-  const s = DATA.sprites;
-  if (s && s.itemsSheet) {
-    const im = new Image();
-    im.onload = () => { SPR.items = true; render(); };
-    im.src = s.itemsSheet;
-  }
-  if (s && s.enemiesSheet) {
-    const im2 = new Image();
-    im2.onload = () => { SPR.enemies = true; };
-    im2.src = s.enemiesSheet;
-  }
+  try {
+    const s = DATA.sprites;
+    if (s && s.itemsSheet) {
+      const im = new Image();
+      im.onload = () => { SPR.items = true; render(); };
+      im.src = s.itemsSheet;
+    }
+    if (s && s.enemiesSheet) {
+      const im2 = new Image();
+      im2.onload = () => { SPR.enemies = true; };
+      im2.src = s.enemiesSheet;
+    }
+  } catch (e) {}
 }
 function applyItemSprite(el, chain, level) {
   const s = DATA.sprites;
@@ -130,16 +134,16 @@ function applyItemSprite(el, chain, level) {
   el.style.backgroundSize = (s.cols * 100) + "% " + (s.rows * 100) + "%";
   el.style.backgroundPosition = (col / (s.cols - 1) * 100) + "% " + (row / (s.rows - 1) * 100) + "%";
   el.style.backgroundRepeat = "no-repeat";
-  el.style.backgroundSizeContains = "";
 }
 
 // ----- Fond dynamique selon la région purifiée -----
 function applyRegionBg() {
   const layer = document.getElementById("bg-layer");
+  if (!layer) return;
   let r = DATA.regions[0];
   DATA.regions.forEach(rg => { if (pur(rg.id)) r = rg; });
-  layer.style.background = r.gradient;
   layer.style.backgroundImage = "none";
+  layer.style.background = r.gradient;
   if (r.bg) {
     const im = new Image();
     im.onload = () => {
@@ -288,10 +292,16 @@ function addPop(i, text) {
 // ----- Générateurs -----
 function spawnFromGenerator(chain) {
   const empties = emptyCells();
-  if (state.energy < 1 || !empties.length) return;
+  if (state.energy < 1 && !(pur("foret") && Math.random() < 0.20)) {
+    if (state.energy < 1) return;
+  }
+  if (!empties.length) return;
 
   const freeTap = pur("foret") && Math.random() < 0.20;
-  if (!freeTap) state.energy -= 1;
+  if (!freeTap) {
+    if (state.energy < 1) return;
+    state.energy -= 1;
+  }
 
   let idx = empties[Math.floor(Math.random() * empties.length)];
   state.grid[idx] = { chain, level: rollDropLevel() };
@@ -311,6 +321,7 @@ function spawnFromGenerator(chain) {
 
 function renderGenerators() {
   const row = document.getElementById("gen-row");
+  if (!row) return;
   row.innerHTML = "";
   DATA.generators.forEach(g => {
     const b = document.createElement("button");
@@ -345,11 +356,13 @@ function collectEco(i) {
 // ----- Commandes -----
 function renderOrders() {
   const wrap = document.getElementById("orders-cards");
+  if (!wrap) return;
   wrap.innerHTML = "";
   const lvl = playerLevel();
 
   state.orders.forEach((oi, slot) => {
     const o = DATA.orders[oi];
+    if (!o) return;
     const npc = DATA.npcs[o.npc];
     const card = document.createElement("div");
     card.className = "order-card";
@@ -550,6 +563,7 @@ function createSparkles(container) {
 let toastTimer = null;
 function showToast(msg) {
   const tEl = document.getElementById("toast");
+  if (!tEl) return;
   tEl.textContent = msg;
   tEl.classList.add("show");
   clearTimeout(toastTimer);
@@ -559,16 +573,21 @@ function showToast(msg) {
 // ----- Navigation -----
 function switchScreen(name) {
   ["merge", "map", "battle"].forEach(n => {
-    document.getElementById("screen-" + n).classList.toggle("active", n === name);
-    document.getElementById("nav-" + n).classList.toggle("active", n === name);
+    const scr = document.getElementById("screen-" + n);
+    const nav = document.getElementById("nav-" + n);
+    if (scr) scr.classList.toggle("active", n === name);
+    if (nav) nav.classList.toggle("active", n === name);
   });
-  if (name === "map") renderMap();
-  if (name === "battle") setupBattle();
+  if (name === "map" && typeof renderMap === 'function') renderMap();
+  if (name === "battle" && typeof setupBattle === 'function') setupBattle();
 }
 
-document.getElementById("nav-merge").addEventListener("click", () => switchScreen("merge"));
-document.getElementById("nav-map").addEventListener("click", () => switchScreen("map"));
-document.getElementById("nav-battle").addEventListener("click", () => switchScreen("battle"));
+const navMerge = document.getElementById("nav-merge");
+const navMap = document.getElementById("nav-map");
+const navBattle = document.getElementById("nav-battle");
+if (navMerge) navMerge.addEventListener("click", () => switchScreen("merge"));
+if (navMap) navMap.addEventListener("click", () => switchScreen("map"));
+if (navBattle) navBattle.addEventListener("click", () => switchScreen("battle"));
 document.getElementById("lang-toggle").addEventListener("click",
   () => setLanguage(currentLang === "fr" ? "en" : "fr"));
 document.getElementById("buy-energy-btn").addEventListener("click", () => {
@@ -579,20 +598,8 @@ document.getElementById("buy-energy-btn").addEventListener("click", () => {
   }
 });
 
-// ----- Histoire -----
+// ----- Histoire (modale récap classique) -----
 const storyModal = document.getElementById("story-modal");
-function showStory() { storyModal.classList.remove("hidden"); }
-function closeStory() { storyModal.classList.add("hidden"); }
-document.getElementById("story-btn").addEventListener("click", showStory);
-document.getElementById("story-close").addEventListener("click", closeStory);
-
-// ----- Initialisation -----
-initSprites();
-renderGenerators();
-setLanguage(currentLang);
-render();
-if (!state.seenIntro) {
-  showStory();
-  state.seenIntro = true;
-  save();
-}
+function showStory() { if (storyModal) storyModal.classList.remove("hidden"); }
+function closeStory() { if (storyModal) storyModal.classList.add("hidden"); }
+docum
