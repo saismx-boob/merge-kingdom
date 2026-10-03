@@ -132,7 +132,7 @@ Fichiers (vanilla JS, aucun framework) :
                 drag&drop, commandes, XP, bonus régions, sprites.
  map.js       — écran Carte : débloquer/purifier les régions.
  battle.js    — combat automatique par tours + fragments.
-Ordre de chargement : data → lang → game → map → battle.
+Ordre de chargement : data → lang → game → story → map → battle.
 Sauvegarde : localStorage clé "routesDeLor_v1" (migration auto des
 anciens états : champs manquants = valeurs par défaut).
 Sprites : détection auto. Si assets/sprites/items.png existe (grille
@@ -144,6 +144,8 @@ JAMAIS de combattant/case invisible.
 Décors : assets/bg_<region>.png (1080×1920) appliqués au #bg-layer
 quand la région est purifiée ; fallback = dégradé CSS par région.
 
+story.js — moteur de récit (scènes dans data.js → DATA.scenes, 
+portraits dans assets/portraits/)
 ----------------------------------------------------------------
 8. DIRECTION ARTISTIQUE (pour la production des assets)
 ----------------------------------------------------------------
