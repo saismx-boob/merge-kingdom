@@ -122,6 +122,32 @@ body {
 }
 .cell.highlight { border-color: #ffce54; background: rgba(255, 206, 84, 0.15); }
 
+/* ----- RACINES DE L'ÉCLIPSE ----- */
+.cell.locked {
+  background: rgba(8, 5, 18, 0.55);
+  border: 2px dashed rgba(150, 100, 200, 0.45);
+  cursor: pointer;
+}
+.cell.locked.lock-selected { border-color: #ffce54; background: rgba(255,206,84,.08); }
+.lock-fog {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 2px; z-index: 6; font-size: 22px;
+}
+.lock-req {
+  font-size: 9px; font-weight: bold;
+  background: #3d2560; color: #e6d5ff;
+  border: 1px solid rgba(180,140,255,.5);
+  padding: 1px 5px; border-radius: 6px;
+}
+.lock-pay {
+  font-size: 10px; font-weight: bold;
+  background: #ffce54; color: #3a2200;
+  padding: 2px 6px; border-radius: 8px;
+}
+.lock-pay.cant { filter: grayscale(1); opacity: .6; }
+
 .creature {
   cursor: grab;
   width: 100%; height: 100%;
@@ -160,6 +186,7 @@ body {
   animation: coin-rise .8s ease-out forwards;
   text-shadow: 0 1px 3px rgba(0,0,0,.8);
   z-index: 20;
+  white-space: nowrap;
 }
 @keyframes coin-rise { 0% { opacity: 1; margin-top: 0; } 100% { opacity: 0; margin-top: -26px; } }
 
