@@ -11,6 +11,20 @@
 </head>
 <body>
 
+<script>
+// ===== CAPTEUR D'ERREURS : affiche tout crash en bandeau rouge =====
+window.addEventListener('error', function (e) {
+  var b = document.getElementById('err-banner');
+  if (!b) {
+    b = document.createElement('div');
+    b.id = 'err-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#b00020;color:#fff;font:12px monospace;padding:8px;white-space:pre-wrap;';
+    document.body.appendChild(b);
+  }
+  b.textContent = '⚠️ ERREUR: ' + e.message + ' | fichier: ' + (e.filename || '?') + ' ligne ' + e.lineno;
+});
+</script>
+
 <div id="bg-layer"></div>
 
 <header id="hud">
