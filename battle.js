@@ -83,26 +83,37 @@ function drawSide(id, team) {
     const d = document.createElement("div");
     d.className = "fighter" + (f.isEnemy ? " enemy" : "") + (f.boss ? " boss" : "");
     d.id = id + "-" + i;
-    let content;
+    d.title = f.name;
+
+    // L'emoji est TOUJOURS créé d'abord : jamais de combattant invisible
+    const em = document.createElement("span");
+    em.className = "emoji";
+    em.textContent = f.emoji;
+    d.appendChild(em);
+
+    // Si une image existe, elle ne remplace l'emoji QUE si elle charge
     if (f.img) {
-      const im = document.createElement("img");
+      const im = new Image();
       im.src = f.img;
-      im.onerror = function () { this.remove(); };
-      d.appendChild(im);
-    } else {
-      const em = document.createElement("span");
-      em.className = "emoji";
-      em.textContent = f.emoji;
-      d.appendChild(em);
+      im.onload = function () {
+        em.style.display = 'none';
+        im.style.width = '40px';
+        im.style.height = '40px';
+        im.style.objectFit = 'contain';
+        d.prepend(im);
+      };
     }
+
     const bar = document.createElement("div");
     bar.className = "hp-bar";
     bar.innerHTML = '<div class="hp-fill" style="width:100%"></div>';
     d.appendChild(bar);
+
     const badge = document.createElement("span");
     badge.className = "lvl-badge";
     badge.textContent = t('lvl') + f.lvl;
     d.appendChild(badge);
+
     el.appendChild(d);
   });
 }
@@ -151,7 +162,8 @@ function attackRound(attackers, defenders, atkSide, defSide) {
     if (atkEl) { atkEl.classList.remove("attacking"); void atkEl.offsetWidth; atkEl.classList.add("attacking"); }
     if (defEl) {
       defEl.classList.remove("hit"); void defEl.offsetWidth; defEl.classList.add("hit");
-      defEl.querySelector(".hp-fill").style.width = (d.hp / d.maxHp * 100) + "%";
+      const fill = defEl.querySelector(".hp-fill");
+      if (fill) fill.style.width = (d.hp / d.maxHp * 100) + "%";
       if (d.hp <= 0) defEl.classList.add("dead");
     }
   });
