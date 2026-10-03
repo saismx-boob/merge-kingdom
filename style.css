@@ -1,8 +1,9 @@
+/* ===== LES ROUTES DE L'OR ===== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: system-ui, sans-serif;
-  background: linear-gradient(160deg, #1a2a6c, #2a4d8f);
+  background: linear-gradient(165deg, #141b3d 0%, #3b2140 55%, #5c2e14 100%);
   color: #fff;
   height: 100vh;
   display: flex;
@@ -12,231 +13,246 @@ body {
   user-select: none;
 }
 
+/* ----- HUD ----- */
 #hud {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 12px;
-  background: rgba(0,0,0,0.3);
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px 10px;
+  background: rgba(20, 12, 28, 0.55);
 }
-
-#coins { font-size: 18px; font-weight: bold; }
+.hud-left { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.hud-right { display: flex; align-items: center; }
+.pill {
+  background: rgba(255, 205, 130, 0.12);
+  border: 1px solid rgba(255, 205, 130, 0.3);
+  border-radius: 16px;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+#energy-bar, #xp-bar {
+  width: 44px; height: 7px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  display: inline-block;
+}
+#energy-fill { display: block; height: 100%; width: 100%; background: #ffd75e; transition: width .4s; }
+#xp-fill     { display: block; height: 100%; width: 0%;  background: #b98cf0; transition: width .4s; }
+#buy-energy-btn {
+  background: #ffd75e; color: #3a2200; border: none;
+  border-radius: 10px; padding: 2px 7px; font-size: 11px; font-weight: bold;
+}
+#buy-energy-btn:disabled { filter: grayscale(1); opacity: .5; }
 
 .nav-btn {
   background: rgba(255,255,255,0.1);
   border: none;
   color: #fff;
-  padding: 8px 12px;
+  padding: 7px 11px;
   border-radius: 20px;
   font-size: 13px;
-  margin-left: 6px;
+  margin-left: 5px;
 }
-.nav-btn.active { background: #ffd700; color: #000; font-weight: bold; }
+.nav-btn.active { background: #ffce54; color: #3a2200; font-weight: bold; }
 #lang-toggle { background: rgba(255,255,255,0.2); font-weight: bold; }
 
 .screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
 .screen.active { display: flex; }
 
-/* ----- Grille merge (6x6) ----- */
-#board {
+/* ----- COMMANDES ----- */
+#orders-bar { padding: 6px 8px 2px; }
+#orders-title { font-size: 13px; opacity: .85; margin-bottom: 5px; }
+#orders-cards { display: flex; gap: 6px; }
+.order-card {
   flex: 1;
+  min-width: 0;
+  background: rgba(255, 190, 120, 0.10);
+  border: 1px solid rgba(255, 190, 120, 0.35);
+  border-radius: 10px;
+  padding: 6px;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+.order-npc { font-weight: bold; color: #ffce54; }
+.order-text { opacity: .9; margin: 3px 0; }
+.order-chips { display: flex; flex-wrap: wrap; gap: 3px; }
+.chip {
+  background: rgba(255,90,90,.18);
+  border: 1px solid rgba(255,90,90,.45);
+  border-radius: 8px;
+  padding: 1px 5px;
+  white-space: nowrap;
+}
+.chip.ok { background: rgba(125,223,135,.15); border-color: rgba(125,223,135,.55); }
+.order-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; gap: 4px; }
+.order-reward { white-space: nowrap; }
+.claim-btn {
+  background: linear-gradient(180deg, #ffd75e, #ff9a3c);
+  color: #3a2200; border: none; border-radius: 10px;
+  padding: 4px 10px; font-weight: bold; font-size: 11px;
+}
+.claim-btn:disabled { filter: grayscale(1); opacity: .5; }
+
+/* ----- GRILLE (7x7) ----- */
+#board-wrap { flex: 1; display: flex; align-items: center; }
+#board {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(7, 1fr);
   gap: 4px;
-  padding: 8px;
+  padding: 6px;
   max-width: 500px;
   width: 100%;
   margin: 0 auto;
-  align-content: center;
 }
-
 .cell {
   aspect-ratio: 1;
-  background: rgba(255,255,255,0.08);
-  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255, 225, 180, 0.07);
+  border: 2px solid rgba(255, 215, 150, 0.22);
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   position: relative;
   overflow: hidden;
 }
+.cell.highlight { border-color: #ffce54; background: rgba(255, 206, 84, 0.15); }
 
-.cell.highlight { border-color: #ffd700; background: rgba(255,215,0,0.15); }
-
-.creature { 
-  cursor: grab; 
-  width: 100%; 
-  height: 100%; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
+.creature {
+  cursor: grab;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
   position: relative;
+  font-size: 30px;
 }
+.creature.chain-eco { background: radial-gradient(circle, rgba(255,200,80,.14), transparent 70%); border-radius: 8px; }
 .creature.dragging { opacity: 0.3; }
+.creature img { width: 85%; height: 85%; object-fit: contain; pointer-events: none; }
 
-.creature img {
-  width: 85%;
-  height: 85%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-/* --- ANIMATIONS DES OBJETS --- */
-/* Animation pour les créatures (flottement) */
+/* Animations */
 .anim-creature { animation: float 2s ease-in-out infinite; }
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-/* Animation pour l'économie (pulsation) */
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 .anim-eco { animation: pulse 2.5s ease-in-out infinite; }
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
-}
-
-/* Animation pour l'utilitaire (balancement) */
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 .anim-util { animation: sway 3s ease-in-out infinite; }
-@keyframes sway {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(5deg); }
-  75% { transform: rotate(-5deg); }
-}
+@keyframes sway { 0%,100% { transform: rotate(0); } 25% { transform: rotate(5deg); } 75% { transform: rotate(-5deg); } }
 
-/* --- EFFET DE FUSION (Étincelles) --- */
 .sparkle {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: #fff;
-  border-radius: 50%;
+  position: absolute; width: 4px; height: 4px;
+  background: #fff; border-radius: 50%;
   pointer-events: none;
-  animation: sparkle-anim 0.6s ease-out forwards;
+  animation: sparkle-anim .6s ease-out forwards;
 }
 @keyframes sparkle-anim {
-  0% { transform: scale(1) translate(0, 0); opacity: 1; }
+  0% { transform: scale(1) translate(0,0); opacity: 1; }
   100% { transform: scale(0) translate(var(--tx), var(--ty)); opacity: 0; }
 }
 
-#ghost {
-  position: fixed;
-  font-size: 40px;
+.coin-pop {
+  position: absolute; left: 50%; top: 20%;
+  transform: translateX(-50%);
+  color: #ffd75e; font-weight: bold; font-size: 12px;
   pointer-events: none;
-  z-index: 100;
+  animation: coin-rise .8s ease-out forwards;
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+  z-index: 20;
+}
+@keyframes coin-rise { 0% { opacity: 1; margin-top: 0; } 100% { opacity: 0; margin-top: -26px; } }
+
+#ghost {
+  position: fixed; font-size: 40px;
+  pointer-events: none; z-index: 100;
   transform: translate(-50%, -50%);
   display: none;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.5));
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .lvl-badge {
-  position: absolute;
-  bottom: 2px;
-  right: 4px;
-  font-size: 9px;
-  background: #ffd700;
-  color: #000;
-  border-radius: 6px;
-  padding: 1px 4px;
-  font-weight: bold;
-  z-index: 10;
+  position: absolute; bottom: 2px; right: 3px;
+  font-size: 9px; background: #ffce54; color: #3a2200;
+  border-radius: 6px; padding: 1px 4px; font-weight: bold; z-index: 10;
 }
 
-footer { padding: 14px; text-align: center; }
-
-#spawn-btn, #fight-btn {
-  background: linear-gradient(180deg, #ffd700, #ff9a00);
-  border: none;
-  border-radius: 30px;
-  padding: 14px 32px;
-  font-size: 17px;
-  font-weight: bold;
-  color: #4a2c00;
-  box-shadow: 0 4px 0 #b36b00;
-  width: 100%;
-  max-width: 400px;
+/* ----- GÉNÉRATEURS ----- */
+footer { padding: 10px; text-align: center; }
+#gen-row { display: flex; gap: 6px; max-width: 500px; margin: 0 auto 6px; }
+.gen-btn {
+  flex: 1;
+  background: linear-gradient(180deg, #ffd75e, #ff9a3c);
+  border: none; border-radius: 14px;
+  padding: 10px 4px; font-size: 13px; font-weight: bold; color: #3a2200;
+  box-shadow: 0 3px 0 #b3651e;
 }
-#spawn-btn:active, #fight-btn:active { transform: translateY(3px); box-shadow: none; }
-#spawn-btn:disabled, #fight-btn:disabled { filter: grayscale(1); opacity: 0.6; }
+.gen-btn small { display: block; font-size: 10px; opacity: .8; }
+.gen-btn:active { transform: translateY(2px); box-shadow: none; }
+.gen-btn:disabled { filter: grayscale(1); opacity: .55; }
+#hint { font-size: 11px; opacity: .7; }
 
-#hint { margin-top: 8px; font-size: 12px; opacity: 0.7; }
-
-/* --- ANIMATIONS DE COMBAT --- */
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  25% { transform: translateX(-6px); }
-  75% { transform: translateX(6px); }
-}
-.hit { animation: shake 0.25s; }
-
-@keyframes attack-lunge {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-10px) scale(1.15); }
-}
-.attacking { animation: attack-lunge 0.3s; }
+/* ----- COMBAT ----- */
+@keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+.hit { animation: shake .25s; }
+@keyframes attack-lunge { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px) scale(1.15); } }
+.attacking { animation: attack-lunge .3s; }
 
 #battle-info {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: bold;
-  background: rgba(0,0,0,0.2);
+  display: flex; justify-content: space-between;
+  padding: 10px 16px; font-size: 14px; font-weight: bold;
+  background: rgba(0,0,0,.2);
 }
-
 #arena {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  padding: 12px;
-  max-width: 500px;
-  width: 100%;
-  margin: 0 auto;
+  flex: 1; display: flex; flex-direction: column; justify-content: space-evenly;
+  padding: 12px; max-width: 500px; width: 100%; margin: 0 auto;
 }
-
-.side {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-  min-height: 90px;
-}
-
+.side { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 90px; }
 #vs { text-align: center; font-size: 28px; }
-
-.fighter {
-  width: 72px;
-  text-align: center;
-  position: relative;
-}
+.fighter { width: 72px; text-align: center; position: relative; }
 .fighter .emoji { font-size: 40px; display: block; }
 .fighter img { width: 40px; height: 40px; object-fit: contain; display: block; margin: 0 auto; }
-.fighter .hp-bar {
-  height: 6px;
-  background: rgba(255,255,255,0.2);
-  border-radius: 3px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-.fighter .hp-fill {
-  height: 100%;
-  background: #4caf50;
-  border-radius: 3px;
-  transition: width 0.3s;
-}
-.fighter.enemy .hp-fill { background: #f44336; }
-.fighter.dead { opacity: 0.25; filter: grayscale(1); }
-
+.fighter.boss .emoji { font-size: 54px; filter: drop-shadow(0 0 8px #ff5252); }
+.fighter .hp-bar { height: 6px; background: rgba(255,255,255,.2); border-radius: 3px; margin-top: 4px; overflow: hidden; }
+.fighter .hp-fill { height: 100%; background: #7ddf87; border-radius: 3px; transition: width .3s; }
+.fighter.enemy .hp-fill { background: #ff5252; }
+.fighter.dead { opacity: .25; filter: grayscale(1); }
 #battle-log {
-  height: 70px;
-  overflow-y: auto;
-  font-size: 12px;
-  padding: 6px 16px;
-  background: rgba(0,0,0,0.25);
-  line-height: 1.5;
-  }
+  height: 80px; overflow-y: auto; font-size: 12px;
+  padding: 6px 16px; background: rgba(0,0,0,.25); line-height: 1.5;
+}
+
+#fight-btn {
+  background: linear-gradient(180deg, #ffd75e, #ff9a3c);
+  border: none; border-radius: 30px;
+  padding: 14px 32px; font-size: 17px; font-weight: bold; color: #3a2200;
+  box-shadow: 0 4px 0 #b3651e;
+  width: 100%; max-width: 400px;
+}
+#fight-btn:active { transform: translateY(3px); box-shadow: none; }
+#fight-btn:disabled { filter: grayscale(1); opacity: .6; }
+
+/* ----- MODALE HISTOIRE ----- */
+.modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200; padding: 18px;
+}
+.modal.hidden { display: none; }
+.modal-card {
+  background: #2a1c3a;
+  border: 1px solid rgba(255,205,130,.4);
+  border-radius: 16px;
+  padding: 18px;
+  max-width: 420px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+  text-align: center;
+}
+.modal-card h2 { color: #ffce54; margin-bottom: 10px; font-size: 18px; }
+#story-text { font-size: 13.5px; line-height: 1.6; text-align: left; opacity: .95; }
+#story-text p { margin-bottom: 10px; }
+#story-close { margin-top: 8px; background: #ffce54; color: #3a2200; font-weight: bold; }
