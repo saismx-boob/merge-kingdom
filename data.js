@@ -1,5 +1,5 @@
 // ===== DONNÉES DU JEU — Les Routes de l'Or =====
-// Tout le contenu (objets, PNJ, commandes, ennemis) est ICI.
+// Tout le contenu (objets, PNJ, commandes, ennemis, racines) est ICI.
 // Équilibrer le jeu = modifier ce fichier, pas le code.
 
 const DATA = {
@@ -58,15 +58,29 @@ const DATA = {
     { id: "gen_util", chain: "utility",   icon: "⚒️", fr: "Forge de Kofi",   en: "Kofi's Forge" }
   ],
 
-  // Table de drop commune aux 3 générateurs (par tap)
   dropTable: [
     { level: 1, chance: 0.85 },
     { level: 2, chance: 0.12 },
     { level: 3, chance: 0.03 }
   ],
 
-  // Chance qu'un tap produise un item bonus supplémentaire
   bonusSpawnChance: 0.20,
+
+  // ===== RACINES DE L'ÉCLIPSE =====
+  // 0 = case libre | N = Racine de niveau N.
+  // Brisée par une fusion de niveau >= N sur une case ADJACENTE, ou en payant.
+  lockMap: [
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 1, 1],
+    [0, 0, 0, 0, 0, 2, 1],
+    [0, 0, 0, 0, 2, 2, 2],
+    [1, 2, 2, 3, 3, 3, 3],
+    [3, 3, 4, 4, 4, 5, 4],
+    [4, 5, 5, 6, 5, 6, 6]
+  ],
+  lockBaseCost: 20 // coût de paiement = base × 2^(niveau-1) → 20/40/80/160/320/640
+
+  ,
 
   npcs: {
     massiva:  { emoji: "👑", fr: "Prince Massiva",       en: "Prince Massiva" },
