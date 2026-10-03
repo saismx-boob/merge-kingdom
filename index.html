@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Merge Kingdom</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Barre du haut : monnaie -->
+  <header id="hud">
+    <div id="coins">🪙 <span id="coin-count">50</span></div>
+    <div id="title">MERGE KINGDOM</div>
+  </header>
+
+  <!-- Grille de fusion 4x4 -->
+  <main id="board"></main>
+
+  <!-- Bouton invocation -->
+  <footer>
+    <button id="spawn-btn">✨ Invoquer (10 🪙)</button>
+    <p id="hint">Glisse 2 créatures identiques l'une sur l'autre pour les fusionner !</p>
+  </footer>
+
+  <script src="game.js"></script>
+</body>
+</html>
