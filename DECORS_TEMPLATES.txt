@@ -1,0 +1,123 @@
+================================================================
+ LUMO : LES ROUTES DE L'OR — BIBLE DE PRODUCTION : DÉCORS & TEMPLATES
+ (Fonds d'écran de régions, cinématiques, icône, UI)
+================================================================
+
+► SPÉCIFICATIONS TECHNIQUES DÉCORS
+- Format : 1080x2340 px (ratio 9:19.5, plein écran mobile moderne)
+- Format accepté : PNG ou JPG (< 500 Ko par fichier, compresser !)
+- ZONES SÛRES OBLIGATOIRES : le HUD couvre les 200px du haut, la
+  grille de jeu et la boîte de dialogue couvrent les 55% du bas.
+  Les éléments clés (lune, monument emblématique) dans les 40%
+  CENTRAUX de l'image.
+- PROFONDEUR : 3 couches de silhouettes minimum (fond clair,
+  milieu, premier plan sombre) + phénomène céleste + poussière
+  dorée ambiante.
+- Fichiers attendus : assets/bg_timgad.png, bg_oasis.png,
+  bg_wagadu.png, bg_fleuve.png, bg_foret.png, bg_trone.png
+
+► PROMPT MAÎTRE à préfixer :
+"2D flat vector game background, mobile game art, layered silhouettes
+with atmospheric depth, golden dust particles floating, afro-fantasy
+style, rich saturated colors, vertical composition 9:19.5, no text,
+no characters in foreground,"
+--negative: text, watermark, characters, UI, blurry, photo, realistic
+
+================================================================
+A. LES 6 DÉCORS DE RÉGIONS (mode "corrompu" par défaut)
+================================================================
+1. BG_TIMGAD (Porte du Nord) — assets/bg_timgad.png
+"ancient Numidian city gate at dusk, white Roman-style stone columns
+and triumphal arch in middle ground, terracotta rooftops, golden
+wheat fields in far background, soot and ash falling like grey snow
+(corruption), thin dark eclipse ring where the sun should be,
+terracotta amber and indigo palette"
+Couleur dominante : terracotta #7a3d1a.
+
+2. BG_OASIS (Oasis de Sel) — assets/bg_oasis.png
+"night oasis with turquoise pools reflecting stars, white salt
+crystal formations, palm tree silhouettes, distant dunes, mirage
+ripples distorting a fake second oasis in the sky, teal and indigo
+palette with golden water sparkles, crescent moon"
+Couleur dominante : turquoise #1a6b52.
+
+3. BG_WAGADU (Ruines de Wagadu) — assets/bg_wagadu.png
+"half-buried golden city ruins in rolling dunes, broken golden drums
+and collapsed mud-brick walls, silence visualized as flat stagnant
+air, sand pouring through cracks, warm golden-ochre palette, huge
+low sun half-eaten by eclipse ring"
+Couleur dominante : or poudré #8a6a1e.
+
+4. BG_FLEUVE (Boucle du Fleuve) — assets/bg_fleuve.png
+"great bend of a majestic river at night, drowned port city with
+tipped ships, water rising too high, dark reeds, hippo silhouettes,
+deep green-teal palette, river spirit pearls glowing underwater,
+storm clouds forming an eclipse ring"
+Couleur dominante : vert profond #17705b.
+
+5. BG_FORET (Forêt des Tambours) — assets/bg_foret.png
+"dense primordial forest with giant baobabs, hundreds of hanging
+drums stilled and wrapped in dark roots, fireflies dimming, emerald
+dark palette with golden drum accents, roots forming eclipse shape
+on the forest floor"
+Couleur dominante : émeraude sombre #1d5c2a.
+
+6. BG_TRONE (Trône de l'Éclipse) — assets/bg_trone.png
+"impossible throne room of void and shadow, floating broken pages
+of stories orbiting a massive black throne, purple eclipse corona
+dominating the sky, torn purple-black drapes, ground made of
+fading golden script, oppressive violet void palette, the most
+menacing of all six backgrounds"
+Couleur dominante : violet void #451a55.
+
+VARIANTES "PURIFIÉ" (optionnel, pour plus tard) : mêmes décors mais
+"same scene but healed: golden dawn light, blooming life, dust now
+golden sparkles, clear normal sun/moon in sky, colors warmed up 30%".
+
+================================================================
+B. DÉCORS DE CINÉMATIQUES (story.js) — 1080x2340 ou 1920x1080
+================================================================
+Les scènes utilisent les mêmes fonds de région + ces 2 spécifiques :
+- SCENE INTRO (camp de Baba Kader) : "cozy night caravan camp under
+  vast starry sky, small campfire, broken golden drum on a woven
+  mat, old kora harp leaning on crates, silhouettes of resting
+  camels, warm firelight vs cold indigo night, sacred intimate mood"
+- SCENE FINALE (l'Aube) : "sunrise over the restored gold route:
+  a straight road of light connecting a white Numidian column gate
+  in the north to a great baobab in the south, caravan silhouettes
+  with golden banners walking toward camera, hopeful epic mood"
+
+Cinématique : le moteur applique un effet Ken Burns (zoom lent) —
+prévoir 15% de marge autour du sujet principal.
+
+================================================================
+C. ICÔNE DE L'APPLICATION (512x512, PNG)
+================================================================
+"mobile game app icon, chibi African heroine Lumo face and shoulders
+facing forward, confident smile, holding a small glowing broken
+golden drum, golden crescent eclipse ring behind her head as halo,
+indigo night background with two tiny shores (stone column left,
+baobab right) at the bottom corners, thick rounded white border
+around the icon, bold readable silhouette at small size"
+⚠️ Tester l'icône à 64x64 AVANT de valider (vitrine Play Store).
+
+================================================================
+D. TEMPLATES UI (pour référence, à redessiner proprement)
+================================================================
+- CARTE RÉGION (fond des cards de map.js) : fond sombre translucide,
+  bord 1px ambre 30% d'opacité, coins arrondis 14px. État corrompu =
+  bordure rouge 45%, purifié = bordure verte + lueur interne.
+- BOUTON STANDARD : dégradé vertical #ffd75e → #ff9a3c, texte
+  #3a2200, ombre dure #b3651e de 3px (effet "poussable").
+- BOUTON PURIFIER : dégradé #b98cf0 → #7d4fd0, ombre #4a2a85.
+- BADGE DE NIVEAU : pastille #ffce54, texte #3a2200, coins 6px.
+- TOAST : pilule sombre rgba(20,12,28,.95), bordure ambre, texte or.
+
+================================================================
+E. FEUILLE DE ROUTE DE PRODUCTION (ordre conseillé)
+================================================================
+SEMAINE 1 : portraits P1 (lumo, baba, eclipse, dihya) + icône app
+SEMAINE 2 : chaîne ÉCO complète (10 items) + rangée ennemis
+SEMAINE 3 : bg_timgad + bg_oasis + chaîne CRÉATURES
+SEMAINE 4 : chaîne TRÉSORS + 4 décors restants + portraits P2
+→ À chaque lot : uploader
