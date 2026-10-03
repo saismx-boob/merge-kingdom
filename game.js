@@ -1,7 +1,7 @@
-// ===== LES ROUTES DE L'OR — Moteur (grille, énergie, commandes, XP) =====
+// ===== LES ROUTES DE L'OR — Moteur (grille, énergie, racines, commandes, XP) =====
 
 const SIZE_COLS = 7, SIZE_ROWS = 7, SIZE = SIZE_COLS * SIZE_ROWS; // 49 cases
-const ENERGY = { max: 80, regenMs: 45000, start: 40 }; // 1 ⚡ / 45 s
+const ENERGY = { max: 80, regenMs: 45000, start: 40 };
 const BUY_ENERGY = { amount: 10, cost: 40 };
 const MAX_LEVEL = 10;
 const SAVE_KEY = "routesDeLor_v1";
@@ -21,6 +21,7 @@ function defaultState() {
     energy: ENERGY.start, energyTs: Date.now(),
     wave: 1, seenIntro: false,
     grid: startingGrid(),
+    locks: DATA.lockMap.flat(),
     orders: [0, 1, 2]
   };
 }
@@ -37,6 +38,12 @@ function load() {
     const d = defaultState();
     for (const k in d) if (s[k] === undefined) s[k] = d[k];
     if (!Array.isArray(s.grid) || s.grid.length !== SIZE) s.grid = startingGrid();
+    // Migration des sauvegardes sans racines : on crée la carte,
+    // mais on libère toute case où un objet existe déjà
+    if (!Array.isArray(s.locks) || s.locks.length !== SIZE) {
+      s.locks = DATA.lockMap.flat();
+      for (let i = 0; i < SIZE; i++) if (s.grid[i]) s.locks[i] = 0;
+    }
     if (!Array.isArray(s.orders) || s.orders.length !== 3 ||
         s.orders.some(i => i < 0 || i >= DATA.orders.length)) s.orders = [0, 1, 2];
     return s;
@@ -52,7 +59,7 @@ function playerLevel() {
 }
 function addXp(n) { state.xp += n; }
 
-// ----- Énergie (gère aussi le hors-ligne) -----
+// ----- Énergie -----
 function tickEnergy() {
   if (state.energy >= ENERGY.max) { state.energyTs = Date.now(); return; }
   const gained = Math.floor((Date.now() - state.energyTs) / ENERGY.regenMs);
@@ -67,13 +74,21 @@ function tickEnergy() {
 setInterval(tickEnergy, 2000);
 
 // ----- Helpers -----
-function dl(o) { return currentLang === 'fr' ? o.fr : o.en; } // texte bilingue des données
+function dl(o) { return currentLang === 'fr' ? o.fr : o.en; }
 
 function rollDropLevel() {
   const r = Math.random();
   let acc = 0;
   for (const d of DATA.dropTable) { acc += d.chance; if (r < acc) return d.level; }
   return 1;
+}
+
+function emptyCells() {
+  const out = [];
+  for (let i = 0; i < SIZE; i++) {
+    if (!state.grid[i] && !state.locks[i]) out.push(i);
+  }
+  return out;
 }
 
 function countItems(chain, level) {
@@ -90,8 +105,45 @@ function getUtilityBoost() {
   return state.grid.reduce((sum, it) =>
     it && it.chain === "utility" ? sum + DATA.chains.utility.items[it.level - 1].boost : sum, 0);
 }
-function emptyCells() {
-  return state.grid.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+
+// ----- Racines de l'Éclipse -----
+function lockCost(req) { return DATA.lockBaseCost * Math.pow(2, req - 1); }
+
+let pendingUnlockPops = [];
+function checkAdjacentUnlocks(idx, level) {
+  const col = idx % SIZE_COLS;
+  const nbs = [];
+  if (col > 0) nbs.push(idx - 1);
+  if (col < SIZE_COLS - 1) nbs.push(idx + 1);
+  if (idx - SIZE_COLS >= 0) nbs.push(idx - SIZE_COLS);
+  if (idx + SIZE_COLS < SIZE) nbs.push(idx + SIZE_COLS);
+  nbs.forEach(n => {
+    if (state.locks[n] > 0 && state.locks[n] <= level) {
+      state.locks[n] = 0;
+      if (selectedLock === n) selectedLock = -1;
+      pendingUnlockPops.push(n);
+    }
+  });
+  if (pendingUnlockPops.length) addXp(2 * pendingUnlockPops.length);
+}
+
+let selectedLock = -1;
+function tapLock(i) {
+  if (state.locks[i] <= 0) return;
+  if (selectedLock === i) {
+    const cost = lockCost(state.locks[i]);
+    if (state.coins >= cost) {
+      state.coins -= cost;
+      state.locks[i] = 0;
+      selectedLock = -1;
+      addXp(2);
+      save(); render();
+      addPop(i, t('unlocked_pop'));
+    }
+  } else {
+    selectedLock = i;
+    renderBoard();
+  }
 }
 
 // ----- Rendu -----
@@ -124,12 +176,28 @@ function xpTotalBefore(lvl) {
 
 function renderBoard() {
   board.innerHTML = "";
-  state.grid.forEach((item, i) => {
+  for (let i = 0; i < SIZE; i++) {
+    const item = state.grid[i];
     const cell = document.createElement("div");
     cell.className = "cell";
     cell.dataset.index = i;
 
-    if (item) {
+    if (state.locks[i] > 0 && !item) {
+      // ===== Case verrouillée par une Racine =====
+      cell.classList.add("locked");
+      const req = state.locks[i];
+      const fog = document.createElement("div");
+      fog.className = "lock-fog";
+      if (selectedLock === i) {
+        const cost = lockCost(req);
+        fog.innerHTML = '🔓<span class="lock-pay' + (state.coins >= cost ? '' : ' cant') + '">' + cost + ' 🪙</span>';
+      } else {
+        fog.innerHTML = '🌑<span class="lock-req">' + t('lvl') + req + '</span>';
+      }
+      cell.appendChild(fog);
+      cell.addEventListener("click", () => tapLock(i));
+    }
+    else if (item) {
       const data = DATA.chains[item.chain].items[item.level - 1];
       const c = document.createElement("div");
       c.className = "creature chain-" + item.chain;
@@ -138,7 +206,6 @@ function renderBoard() {
       if (item.chain === 'eco') c.classList.add('anim-eco');
       if (item.chain === 'utility') c.classList.add('anim-util');
 
-      // L'emoji est la base ; si une image existe elle vient se superposer
       c.textContent = data.emoji;
       if (data.img) {
         const img = document.createElement("img");
@@ -156,10 +223,21 @@ function renderBoard() {
       attachDrag(c);
     }
     board.appendChild(cell);
-  });
+  }
 }
 
-// ----- Générateurs (3, un par chaîne) -----
+// Pop "post-render" (+🪙, 🌿 Libre) — survit au re-rendu
+function addPop(i, text) {
+  const cell = board.children[i];
+  if (!cell) return;
+  const pop = document.createElement("div");
+  pop.className = "coin-pop";
+  pop.textContent = text;
+  cell.appendChild(pop);
+  setTimeout(() => pop.remove(), 850);
+}
+
+// ----- Générateurs -----
 function spawnFromGenerator(chain) {
   const empties = emptyCells();
   if (state.energy < 1 || !empties.length) return;
@@ -167,9 +245,7 @@ function spawnFromGenerator(chain) {
   state.energy -= 1;
   let idx = empties[Math.floor(Math.random() * empties.length)];
   state.grid[idx] = { chain, level: rollDropLevel() };
-  createSparkles(board.children[idx]);
 
-  // Item bonus occasionnel → la grille se remplit plus vite
   if (Math.random() < (DATA.bonusSpawnChance || 0)) {
     const rest = emptyCells();
     if (rest.length) {
@@ -179,6 +255,7 @@ function spawnFromGenerator(chain) {
   }
 
   save(); render();
+  createSparkles(board.children[idx]);
 }
 
 function renderGenerators() {
@@ -195,26 +272,23 @@ function renderGenerators() {
   updateGenButtons();
 }
 function updateGenButtons() {
-  const canSpawn = state.energy >= 1 && state.grid.includes(null);
+  const canSpawn = state.energy >= 1 && emptyCells().length > 0;
   DATA.generators.forEach(g => {
     const b = document.getElementById(g.id);
     if (b) b.disabled = !canSpawn;
   });
 }
 
-// ----- Récolte (tap sur une Richesse) -----
+// ----- Récolte -----
 function collectEco(i) {
   const item = state.grid[i];
   if (!item || item.chain !== "eco") return;
   const data = DATA.chains.eco.items[item.level - 1];
   state.coins += data.value;
   state.grid[i] = null;
-  const pop = document.createElement("div");
-  pop.className = "coin-pop";
-  pop.textContent = "+" + data.value + " 🪙";
-  board.children[i].appendChild(pop);
-  createSparkles(board.children[i]);
   save(); render();
+  addPop(i, "+" + data.value + " 🪙");
+  createSparkles(board.children[i]);
 }
 
 // ----- Commandes -----
@@ -299,6 +373,7 @@ ghost.id = "ghost";
 document.body.appendChild(ghost);
 
 let dragFrom = -1;
+let lastMergeCell = -1;
 
 function attachDrag(el) {
   el.addEventListener("pointerdown", e => {
@@ -330,7 +405,7 @@ document.addEventListener("pointerup", e => {
   if (target) {
     const idx = +target.dataset.index;
     if (idx === dragFrom) {
-      collectEco(idx); // tap simple sur une Richesse = récolter
+      collectEco(idx);
     } else {
       tryMerge(dragFrom, idx);
     }
@@ -348,7 +423,17 @@ function endDrag() {
   ghost.style.display = "none";
   ghost.style.backgroundImage = 'none';
   document.querySelectorAll(".highlight").forEach(c => c.classList.remove("highlight"));
+  selectedLock = -1;
   render();
+  // Juice post-render : popups de libération + étincelles de fusion
+  if (pendingUnlockPops.length) {
+    pendingUnlockPops.forEach(n => addPop(n, t('unlocked_pop')));
+    pendingUnlockPops = [];
+  }
+  if (lastMergeCell >= 0) {
+    createSparkles(board.children[lastMergeCell]);
+    lastMergeCell = -1;
+  }
 }
 
 function highlightTargets() {
@@ -357,28 +442,42 @@ function highlightTargets() {
   document.querySelectorAll(".cell").forEach(cell => {
     const i = +cell.dataset.index;
     const targetItem = state.grid[i];
-    if (i !== dragFrom && (targetItem === null ||
-        (targetItem.chain === item.chain && targetItem.level === item.level)))
+    const freeEmpty = !targetItem && !state.locks[i];
+    const mergeable = targetItem &&
+      targetItem.chain === item.chain && targetItem.level === item.level;
+    if (i !== dragFrom && (freeEmpty || mergeable))
       cell.classList.add("highlight");
   });
 }
 
 function tryMerge(a, b) {
   const itemA = state.grid[a], itemB = state.grid[b];
-  if (!itemA || !itemB || a === b) return;
-  if (itemA.chain === itemB.chain && itemA.level === itemB.level && itemA.level < MAX_LEVEL) {
-    state.grid[b] = { chain: itemA.chain, level: itemA.level + 1 };
+  if (!itemA || a === b) return;
+  if (state.locks[b] > 0) return; // case verrouillée : drop impossible
+
+  if (!itemB) {
+    // Déplacement vers une case vide libre
+    state.grid[b] = itemA;
     state.grid[a] = null;
-    createSparkles(board.children[b]);
+    return;
   }
-  // sinon : échange de place
-  else if (itemA.chain !== itemB.chain || itemA.level !== itemB.level) {
+
+  if (itemA.chain === itemB.chain && itemA.level === itemB.level && itemA.level < MAX_LEVEL) {
+    // FUSION
+    const newLevel = itemA.level + 1;
+    state.grid[b] = { chain: itemA.chain, level: newLevel };
+    state.grid[a] = null;
+    lastMergeCell = b;
+    checkAdjacentUnlocks(b, newLevel);
+  } else {
+    // Échange de place
     state.grid[a] = itemB;
     state.grid[b] = itemA;
   }
 }
 
 function createSparkles(container) {
+  if (!container) return;
   for (let i = 0; i < 6; i++) {
     const s = document.createElement("div");
     s.className = "sparkle";
