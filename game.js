@@ -6,8 +6,6 @@ const MINE_RATE = 15000;
 const MINE_GAIN = 2;
 const MAX_LEVEL = 10;
 
-// --- Configuration des 3 Chaînes de Fusion ---
-// Ajout de la propriété "image" pour chaque objet
 const ITEMS = {
   eco: [
     { name: "Graine de Lumière", emoji: "🌱", image: "assets/eco_1.png", reward: 1 },
@@ -86,14 +84,15 @@ function render() {
       c.className = "creature";
       c.dataset.index = i;
       
-      // Utilisation de l'image si disponible, sinon emoji
+      // AJOUT DE LA CLASSE D'ANIMATION SELON LA CHAÎNE
+      if (item.chain === 'creatures') c.classList.add('anim-creature');
+      if (item.chain === 'eco') c.classList.add('anim-eco');
+      if (item.chain === 'utility') c.classList.add('anim-util');
+
       if (data.image) {
         const img = document.createElement("img");
         img.src = data.image;
         img.alt = data.emoji;
-        img.style.width = "100%";
-        img.style.height = "100%";
-        img.style.objectFit = "contain";
         img.onerror = function() { this.style.display = 'none'; c.textContent = data.emoji; };
         c.appendChild(img);
       } else {
@@ -148,14 +147,10 @@ function attachDrag(el) {
   el.addEventListener("pointerdown", e => {
     dragFrom = +el.dataset.index;
     el.classList.add("dragging");
-    // Pour le ghost, on essaie de prendre l'image ou l'emoji
     const img = el.querySelector('img');
     ghost.textContent = img ? '' : el.textContent;
     if (img) {
       ghost.style.backgroundImage = `url('${img.src}')`;
-      ghost.style.backgroundSize = 'contain';
-      ghost.style.backgroundRepeat = 'no-repeat';
-      ghost.style.backgroundPosition = 'center';
       ghost.style.width = '60px';
       ghost.style.height = '60px';
     } else {
@@ -207,6 +202,22 @@ function highlightTargets() {
   });
 }
 
+// Fonction pour créer des étincelles
+function createSparkles(container) {
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement("div");
+    s.className = "sparkle";
+    const angle = Math.random() * Math.PI * 2;
+    const dist = 20 + Math.random() * 30;
+    s.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+    s.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+    s.style.left = '50%';
+    s.style.top = '50%';
+    container.appendChild(s);
+    setTimeout(() => s.remove(), 600);
+  }
+}
+
 function tryMerge(from, to) {
   if (from === to) return;
   const itemA = state.grid[from];
@@ -229,7 +240,12 @@ function tryMerge(from, to) {
     
     save();
     render();
-    board.children[to].classList.add("pop");
+    
+    // Ajout de l'effet de fusion
+    const cellTarget = board.children[to];
+    cellTarget.classList.add("pop");
+    createSparkles(cellTarget);
+    
     return;
   }
   save();
