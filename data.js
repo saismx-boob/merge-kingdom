@@ -1,8 +1,15 @@
 // ===== DONNÉES DU JEU — Les Routes de l'Or =====
-// Tout le contenu (objets, PNJ, commandes, ennemis, racines) est ICI.
-// Équilibrer le jeu = modifier ce fichier, pas le code.
+// Tout le contenu est ICI. Équilibrer = modifier ce fichier, pas le code.
 
 const DATA = {
+
+  // ===== SPRITESHEETS (fichiers optionnels : si absents → emojis) =====
+  sprites: {
+    itemsSheet: "assets/sprites/items.png", // 10 col × 3 rangées, cellules 128×128
+    cols: 10, rows: 3,
+    rowOrder: ["eco", "creatures", "utility"],
+    enemiesSheet: "assets/sprites/enemies.png" // 6 col × 1 rangée, cellules 128×128
+  },
 
   chains: {
     eco: {
@@ -66,9 +73,6 @@ const DATA = {
 
   bonusSpawnChance: 0.20,
 
-  // ===== RACINES DE L'ÉCLIPSE =====
-  // 0 = case libre | N = Racine de niveau N.
-  // Brisée par une fusion de niveau >= N sur une case ADJACENTE, ou en payant.
   lockMap: [
     [0, 0, 0, 0, 0, 0, 1],
     [0, 0, 0, 0, 0, 1, 1],
@@ -78,9 +82,71 @@ const DATA = {
     [3, 3, 4, 4, 4, 5, 4],
     [4, 5, 5, 6, 5, 6, 6]
   ],
-  lockBaseCost: 20 // coût de paiement = base × 2^(niveau-1) → 20/40/80/160/320/640
+  lockBaseCost: 20,
 
-  ,
+  // ===== LA ROUTE DE L'OR — Régions à fonder & Gardiens à purifier =====
+  regions: [
+    { id: "timgad", icon: "🏛️",
+      fr: "Timgad, la Porte du Nord", en: "Timgad, Gate of the North",
+      priest_fr: "Prêtre des Cendres", priest_en: "Ash Priest",
+      freed_fr: "Dihya, Reine des Aurès", freed_en: "Dihya, Queen of the Aurès",
+      freedEmoji: "🐪", unlock: { coins: 0, level: 1 }, freeWave: 5,
+      gradient: "linear-gradient(170deg,#1a1430 0%,#4a2418 60%,#7a3d1a 100%)",
+      bg: "assets/bg_timgad.png",
+      bonus_fr: "+10% d'or (commandes & combats)", bonus_en: "+10% gold (orders & battles)",
+      lore_fr: "Le Prêtre des Cendres étouffait les greniers de Timgad de suie. Dihya, libérée, rallume les fourriers de la cité.",
+      lore_en: "The Ash Priest choked Timgad's granaries with soot. Freed, Dihya relights the city's beacon fires." },
+    { id: "oasis", icon: "🏝️",
+      fr: "L'Oasis de Sel", en: "The Salt Oasis",
+      priest_fr: "Prêtre du Mirage", priest_en: "Mirage Priest",
+      freed_fr: "Azizi, Djinn des Sables", freed_en: "Azizi, Djinn of Sands",
+      freedEmoji: "🧞", unlock: { coins: 500, level: 3 }, freeWave: 8,
+      gradient: "linear-gradient(170deg,#0d1f2d 0%,#14504d 60%,#1a6b52 100%)",
+      bg: "assets/bg_oasis.png",
+      bonus_fr: "Énergie 25% plus rapide", bonus_en: "Energy 25% faster",
+      lore_fr: "Le Mirage faisait tourner les puits en rond. Azizi, libéré, souffle à nouveau sur les caravanes assoiffées.",
+      lore_en: "The Mirage spun the wells in circles. Freed, Azizi breathes cool winds upon thirsty caravans again." },
+    { id: "wagadu", icon: "🏜️",
+      fr: "Ruines de Wagadu", en: "Ruins of Wagadu",
+      priest_fr: "Prêtre du Silence", priest_en: "Silence Priest",
+      freed_fr: "Bida, Serpent Arc-en-Ciel", freed_en: "Bida, Rainbow Serpent",
+      freedEmoji: "🐍", unlock: { coins: 2000, level: 5 }, freeWave: 12,
+      gradient: "linear-gradient(170deg,#241a10 0%,#5c4416 55%,#8a6a1e 100%)",
+      bg: "assets/bg_wagadu.png",
+      bonus_fr: "+15% XP", bonus_en: "+15% XP",
+      lore_fr: "Le Silence avait arrêté les tambours d'or de Wagadu. Bida, libéré, recoud le fleuve du récit.",
+      lore_en: "Silence had stopped Wagadu's golden drums. Freed, Bida sews the river of story back together." },
+    { id: "fleuve", icon: "🦛",
+      fr: "La Boucle du Fleuve", en: "The River Bend",
+      priest_fr: "Prêtre des Crues", priest_en: "Flood Priest",
+      freed_fr: "Mami Wata, Esprit des Eaux", freed_en: "Mami Wata, Water Spirit",
+      freedEmoji: "🧜‍♀️", unlock: { coins: 6000, level: 7 }, freeWave: 16,
+      gradient: "linear-gradient(170deg,#0a1f24 0%,#114b46 55%,#17705b 100%)",
+      bg: "assets/bg_fleuve.png",
+      bonus_fr: "+15% ATK des Esprits", bonus_en: "+15% Spirit ATK",
+      lore_fr: "Les Crues noyaient les ports de Tombouctou. Mami Wata, libérée, apaise le fleuve et Double son or.",
+      lore_en: "The Floods drowned Timbuktu's ports. Freed, Mami Wata soothes the river and doubles its gold." },
+    { id: "foret", icon: "🌳",
+      fr: "La Forêt des Tambours", en: "The Drum Forest",
+      priest_fr: "Prêtre des Racines", priest_en: "Root Priest",
+      freed_fr: "Kossa, Tambour Vivant", freed_en: "Kossa, Living Drum",
+      freedEmoji: "🥁", unlock: { coins: 15000, level: 9 }, freeWave: 20,
+      gradient: "linear-gradient(170deg,#0c1e0f 0%,#14401c 55%,#1d5c2a 100%)",
+      bg: "assets/bg_foret.png",
+      bonus_fr: "20% de taps de générateur gratuits", bonus_en: "20% free generator taps",
+      lore_fr: "Les Racines volaient le rythme de la forêt. Kossa, libéré, rend aux tambours leur battement libre.",
+      lore_en: "The Roots stole the forest's rhythm. Freed, Kossa returns its free heartbeat to the drums." },
+    { id: "trone", icon: "🌑",
+      fr: "Le Trône de l'Éclipse", en: "The Eclipse Throne",
+      priest_fr: "Avatar de l'Éclipse", priest_en: "Eclipse Avatar",
+      freed_fr: "L'Aube Nouvelle", freed_en: "The New Dawn",
+      freedEmoji: "🌅", unlock: { coins: 40000, level: 12 }, freeWave: 25,
+      gradient: "linear-gradient(170deg,#0a0614 0%,#2a1140 55%,#451a55 100%)",
+      bg: "assets/bg_trone.png",
+      bonus_fr: "+20% or & XP", bonus_en: "+20% gold & XP",
+      lore_fr: "Sur le Trône, l'Éclipse elle-même attendait. Brise-la : les deux rives ne feront plus qu'un dans l'Aube.",
+      lore_en: "Upon the Throne, the Eclipse itself waited. Shatter it: both shores will become one in the Dawn." }
+  ],
 
   npcs: {
     massiva:  { emoji: "👑", fr: "Prince Massiva",       en: "Prince Massiva" },
@@ -96,67 +162,56 @@ const DATA = {
       en: "Timgad's granaries are empty and the imperial caravan is coming. Bring me Amber Seeds to feed my people!",
       requires: [ { chain: "eco", level: 1, qty: 3 } ],
       reward: { coins: 60, xp: 8 } },
-
     { npc: "yennenga", minLevel: 1,
       fr: "Les Ombres rôdent sur la piste du sel. Un Fennec Étoilé guiderait ma patrouille la nuit.",
       en: "Shadows prowl the salt road. A Star Fennec would guide my night patrol.",
       requires: [ { chain: "creatures", level: 2, qty: 1 } ],
       reward: { coins: 80, xp: 10 } },
-
     { npc: "tanit", minLevel: 1,
       fr: "Je façonne des amulettes pour protéger les caravanes. Il me faut des Perles de Tanit.",
       en: "I craft amulets to protect the caravans. I need Pearls of Tanit.",
       requires: [ { chain: "utility", level: 1, qty: 2 } ],
       reward: { coins: 70, xp: 9 } },
-
     { npc: "massiva", minLevel: 2,
       fr: "Les jardins du palais se font maigres. Un Palmier Doré ferait honneur à Numidie.",
       en: "The palace gardens grow thin. A Golden Palm would honour Numidia.",
       requires: [ { chain: "eco", level: 3, qty: 1 } ],
       reward: { coins: 150, xp: 15 } },
-
     { npc: "anansi", minLevel: 2,
       fr: "Je tisse l'histoire des deux rives, mais il me faut des témoins ! Apporte-moi deux Fennecs : ils voient tout.",
       en: "I weave the story of both shores, but I need witnesses! Bring me two Fennecs: they see everything.",
       requires: [ { chain: "creatures", level: 2, qty: 2 } ],
       reward: { coins: 140, xp: 14 } },
-
     { npc: "kofi", minLevel: 2,
       fr: "Ma forge a soif de métal et mes apprentis de nourriture. Une Lanterne et des Graines, vite !",
       en: "My forge thirsts for metal and my apprentices for food. A Lantern and some Seeds, quickly!",
       requires: [ { chain: "utility", level: 2, qty: 1 }, { chain: "eco", level: 1, qty: 2 } ],
       reward: { coins: 160, xp: 16 } },
-
     { npc: "tanit", minLevel: 3,
       fr: "À Tombouctou, on paie l'or au poids du Puits. Apporte-moi un Puits de l'Oasis, je te rendrai l'or au double.",
       en: "In Timbuktu, gold is paid by the weight of the Well. Bring me an Oasis Well and I'll return double gold.",
       requires: [ { chain: "eco", level: 4, qty: 1 } ],
       reward: { coins: 260, xp: 22 } },
-
     { npc: "yennenga", minLevel: 3,
       fr: "Ma cavalerie exige un Cheval Numide digne de Massinissa. Rien de moins.",
       en: "My cavalry demands a Numidian Horse worthy of Massinissa. Nothing less.",
       requires: [ { chain: "creatures", level: 3, qty: 1 } ],
       reward: { coins: 280, xp: 24 } },
-
     { npc: "anansi", minLevel: 4,
       fr: "Une Boussole des Sables oubliée dort dans les ruines... ou plutôt dans TES mains. Donne.",
       en: "A lost Sand Compass sleeps in the ruins... or rather in YOUR hands. Hand it over.",
       requires: [ { chain: "utility", level: 4, qty: 1 } ],
       reward: { coins: 320, xp: 28 } },
-
     { npc: "massiva", minLevel: 4,
       fr: "L'ambassade de Wagadu arrive ! J'exposerai un Crocodile du Fleuve et un Puits de l'Oasis pour honorer Bida.",
       en: "The embassy of Wagadu arrives! I shall display a River Crocodile and an Oasis Well to honour Bida.",
       requires: [ { chain: "creatures", level: 4, qty: 1 }, { chain: "eco", level: 4, qty: 1 } ],
       reward: { coins: 500, xp: 40 } },
-
     { npc: "kofi", minLevel: 5,
       fr: "Pour briser les Racines d'Ombre, il me faut forger des Tambours Parleurs. Deux, pas un !",
       en: "To shatter the Shadow Roots, I must forge Talking Drums. Two, not one!",
       requires: [ { chain: "utility", level: 3, qty: 2 } ],
       reward: { coins: 420, xp: 35 } },
-
     { npc: "tanit", minLevel: 5,
       fr: "La Caravane de l'Éclipse part à l'aube. Une Amphore d'Or scellera notre pacte avec les empires du Sud.",
       en: "The Eclipse Caravan leaves at dawn. A Golden Amphora will seal our pact with the empires of the South.",
