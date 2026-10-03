@@ -21,13 +21,14 @@ function makeFighter(lvl, isEnemy, emoji, img, name, isBoss) {
 }
 
 function getPlayerTeam() {
-  const boost = getUtilityBoost(); // bonus % des Trésors sur la grille
+  const boost = getUtilityBoost();
+  const am = atkMult(); // bonus Mami Wata
   return state.grid
     .filter(item => item && item.chain === 'creatures')
     .map(item => {
       const data = DATA.chains.creatures.items[item.level - 1];
       const f = makeFighter(item.level, false, data.emoji, data.img, dl(data), false);
-      f.atk = Math.round(f.atk * (1 + boost / 100));
+      f.atk = Math.round(f.atk * (1 + boost / 100) * am);
       return f;
     });
 }
@@ -35,21 +36,25 @@ function getPlayerTeam() {
 function getEnemyTeam(w) {
   const boss = w % 5 === 0;
   const tier = enemyTier(w);
+  const tierIdx = DATA.enemies.indexOf(tier);
   const team = [];
   if (boss) {
     const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.ceil(w / 2) + 1));
-    team.push(makeFighter(lvl, true, tier.emoji, null, dl(tier), true));
+    const f = makeFighter(lvl, true, tier.emoji, null, dl(tier), true);
+    f.sheetCol = tierIdx;
+    team.push(f);
   } else {
     const count = Math.min(1 + Math.floor(w / 2), 4);
     for (let i = 0; i < count; i++) {
       const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.round(w / 2) + (i === 0 ? 1 : 0)));
-      team.push(makeFighter(lvl, true, tier.emoji, null, dl(tier), false));
+      const f = makeFighter(lvl, true, tier.emoji, null, dl(tier), false);
+      f.sheetCol = tierIdx;
+      team.push(f);
     }
   }
   return team;
 }
 
-// ----- Affichage pré-combat -----
 function setupBattle() {
   if (battleRunning) return;
   const w = state.wave;
@@ -59,7 +64,7 @@ function setupBattle() {
   document.getElementById("wave-label").textContent =
     t('wave_label') + " " + w + (boss ? " 👑" : "");
   document.getElementById("reward-label").textContent =
-    t('reward_label') + " : " + battleReward + " 🪙";
+    t('reward_label') + " : " + Math.round(battleReward * goldMult()) + " 🪙";
 
   pendingEnemies = getEnemyTeam(w);
   drawSide("player-side", getPlayerTeam());
@@ -85,23 +90,42 @@ function drawSide(id, team) {
     d.id = id + "-" + i;
     d.title = f.name;
 
-    // L'emoji est TOUJOURS créé d'abord : jamais de combattant invisible
     const em = document.createElement("span");
     em.className = "emoji";
     em.textContent = f.emoji;
-    d.appendChild(em);
 
-    if (f.img) {
-      const im = new Image();
-      im.src = f.img;
-      im.onload = function () {
-        em.style.display = 'none';
-        im.style.width = '40px';
-        im.style.height = '40px';
-        im.style.objectFit = 'contain';
-        d.prepend(im);
-      };
+    // Sprite ennemi depuis la spritesheet dédiée (si disponible)
+    if (f.isEnemy && SPR.enemies && f.sheetCol !== undefined) {
+      const s = DATA.sprites;
+      em.style.backgroundImage = "url('" + s.enemiesSheet + "')";
+      em.style.backgroundSize = (s.cols * 100) + "% 100%";
+      em.style.backgroundPosition = (f.sheetCol / (s.cols - 1) * 100) + "% 0%";
+      em.style.backgroundRepeat = "no-repeat";
+      em.style.width = "44px";
+      em.style.height = "44px";
+      em.style.margin = "0 auto";
+      em.style.display = "block";
+      if (f.boss) { em.style.width = "58px"; em.style.height = "58px"; }
+      em.textContent = "";
     }
+
+    // Sprite joueur depuis la feuille d'items (rangée creatures)
+    if (!f.isEnemy && SPR.items && f.img) {
+      const s = DATA.sprites;
+      const row = s.rowOrder.indexOf("creatures");
+      const col = f.lvl - 1;
+      em.style.backgroundImage = "url('" + s.itemsSheet + "')";
+      em.style.backgroundSize = (s.cols * 100) + "% " + (s.rows * 100) + "%";
+      em.style.backgroundPosition = (col / (s.cols - 1) * 100) + "% " + (row / (s.rows - 1) * 100) + "%";
+      em.style.backgroundRepeat = "no-repeat";
+      em.style.width = "44px";
+      em.style.height = "44px";
+      em.style.margin = "0 auto";
+      em.style.display = "block";
+      em.textContent = "";
+    }
+
+    d.appendChild(em);
 
     const bar = document.createElement("div");
     bar.className = "hp-bar";
@@ -123,7 +147,6 @@ function log(msg) {
   l.scrollTop = l.scrollHeight;
 }
 
-// ----- Déroulement du combat -----
 document.getElementById("fight-btn").addEventListener("click", () => {
   if (battleRunning) return;
   battleRunning = true;
@@ -178,13 +201,13 @@ function checkEnd(players, enemies, timer) {
 
   if (pAlive) {
     const boss = state.wave % 5 === 0;
-    state.coins += battleReward;
+    const gained = Math.round(battleReward * goldMult());
+    state.coins += gained;
     const xpGain = (3 + Math.floor(state.wave / 2)) * (boss ? 3 : 1);
     addXp(xpGain);
-    log(t('log_victory') + battleReward + " 🪙");
+    log(t('log_victory') + gained + " 🪙");
     log(t('log_xp') + " (+" + xpGain + ")");
 
-    // FRAGMENT : le combat nourrit la grille de fusion
     if (boss) {
       if (!spawnItem("utility", 2)) { state.coins += 20; log(t('log_grid_full')); }
       else log(t('log_fragment_util'));
@@ -195,6 +218,9 @@ function checkEnd(players, enemies, timer) {
     }
 
     state.wave += 1;
+    const ready = DATA.regions.find(r =>
+      state.unlockedRegions.includes(r.id) && !pur(r.id) && hasBeatenWave(r.freeWave));
+    if (ready) showToast("🗺️ " + t('btn_purify') + " : " + dl({ fr: r0(ready) }));
   } else {
     state.coins += 5;
     log(t('log_defeat'));
@@ -205,8 +231,10 @@ function checkEnd(players, enemies, timer) {
   return true;
 }
 
+function r0(r) { return currentLang === 'fr' ? r.fr : r.en; }
+
 function spawnItem(chain, level) {
-  const empty = emptyCells(); // respecte aussi les Racines 🔒
+  const empty = emptyCells();
   if (!empty.length) return false;
   state.grid[empty[Math.floor(Math.random() * empty.length)]] = { chain, level };
   return true;
