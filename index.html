@@ -8,6 +8,8 @@
 </head>
 <body>
 
+<div id="bg-layer"></div>
+
 <header id="hud">
   <div class="hud-left">
     <div id="coin-box" class="pill">🪙 <span id="coin-count">0</span></div>
@@ -23,6 +25,7 @@
   </div>
   <nav class="hud-right">
     <button id="nav-merge" class="nav-btn active">🏰</button>
+    <button id="nav-map" class="nav-btn">🗺️</button>
     <button id="nav-battle" class="nav-btn">⚔️</button>
     <button id="lang-toggle" class="nav-btn">🌐 <span id="lang-label">FR</span></button>
     <button id="story-btn" class="nav-btn">📖</button>
@@ -41,6 +44,14 @@
   </footer>
 </section>
 
+<section id="screen-map" class="screen">
+  <div id="map-head">
+    <h3 id="map-title"></h3>
+    <span id="map-progress"></span>
+  </div>
+  <div id="map-list"></div>
+</section>
+
 <section id="screen-battle" class="screen">
   <div id="battle-info">
     <span id="wave-label"></span>
@@ -55,6 +66,8 @@
   <footer><button id="fight-btn"></button></footer>
 </section>
 
+<div id="toast"></div>
+
 <div id="story-modal" class="modal hidden">
   <div class="modal-card">
     <h2 id="story-title"></h2>
@@ -66,6 +79,7 @@
 <script src="data.js"></script>
 <script src="lang.js"></script>
 <script src="game.js"></script>
+<script src="map.js"></script>
 <script src="battle.js"></script>
 </body>
 </html>
