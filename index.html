@@ -1,52 +1,71 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Les Chroniques de Lumo</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Lumo : Les Routes de l'Or</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Barre du haut -->
-  <header id="hud">
-    <div id="coins">🪙 <span id="coin-count">50</span></div>
-    <nav>
-      <button class="nav-btn active" id="nav-merge">🏰 Royaume</button>
-      <button class="nav-btn" id="nav-battle">⚔️ Combat</button>
-      <button class="nav-btn" id="lang-toggle" onclick="setLanguage(currentLang === 'fr' ? 'en' : 'fr')">
-        🌐 <span id="lang-label">FR</span>
-      </button>
-    </nav>
-  </header>
 
-  <!-- ÉCRAN ROYAUME (merge) -->
-  <section id="screen-merge" class="screen active">
-    <main id="board"></main>
-    <footer>
-      <button id="spawn-btn">✨ Invoquer (10 🪙)</button>
-      <p id="hint">⛏️ Mine : +2 🪙 / 15s &nbsp;•&nbsp; Fusionne 2 objets identiques !</p>
-    </footer>
-  </section>
-
-  <!-- ÉCRAN COMBAT -->
-  <section id="screen-battle" class="screen">
-    <div id="battle-info">
-      <span id="wave-label">Vague 1</span>
-      <span id="reward-label">Récompense : 15 🪙</span>
+<header id="hud">
+  <div class="hud-left">
+    <div id="coin-box" class="pill">🪙 <span id="coin-count">0</span></div>
+    <div id="energy-box" class="pill">
+      ⚡ <span id="energy-count">0</span>
+      <span id="energy-bar"><i id="energy-fill"></i></span>
+      <button id="buy-energy-btn">+5</button>
     </div>
-    <div id="arena">
-      <div id="enemy-side" class="side"></div>
-      <div id="vs">⚔️</div>
-      <div id="player-side" class="side"></div>
+    <div id="level-box" class="pill">
+      ⭐ <span id="level-num">1</span>
+      <span id="xp-bar"><i id="xp-fill"></i></span>
     </div>
-    <div id="battle-log"></div>
-    <footer>
-      <button id="fight-btn">⚔️ LANCER LE COMBAT</button>
-    </footer>
-  </section>
+  </div>
+  <nav class="hud-right">
+    <button id="nav-merge" class="nav-btn active">🏰</button>
+    <button id="nav-battle" class="nav-btn">⚔️</button>
+    <button id="lang-toggle" class="nav-btn">🌐 <span id="lang-label">FR</span></button>
+    <button id="story-btn" class="nav-btn">📖</button>
+  </nav>
+</header>
 
-  <script src="lang.js"></script>
-  <script src="game.js"></script>
-  <script src="battle.js"></script>
+<section id="screen-merge" class="screen active">
+  <div id="orders-bar">
+    <h3 id="orders-title"></h3>
+    <div id="orders-cards"></div>
+  </div>
+  <div id="board-wrap"><div id="board"></div></div>
+  <footer>
+    <div id="gen-row"></div>
+    <p id="hint"></p>
+  </footer>
+</section>
+
+<section id="screen-battle" class="screen">
+  <div id="battle-info">
+    <span id="wave-label"></span>
+    <span id="reward-label"></span>
+  </div>
+  <div id="arena">
+    <div id="enemy-side" class="side"></div>
+    <div id="vs">⚔️</div>
+    <div id="player-side" class="side"></div>
+  </div>
+  <div id="battle-log"></div>
+  <footer><button id="fight-btn"></button></footer>
+</section>
+
+<div id="story-modal" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="story-title"></h2>
+    <div id="story-text"></div>
+    <button id="story-close" class="nav-btn"></button>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script src="lang.js"></script>
+<script src="game.js"></script>
+<script src="battle.js"></script>
 </body>
 </html>
