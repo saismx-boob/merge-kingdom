@@ -1,38 +1,50 @@
-// ===== LUMO'S CHRONICLES — M3 : Combat automatique =====
+// ===== LES ROUTES DE L'OR — Combat des Caravanes =====
 
-const ENEMIES = ["👺", "👹", "👿", "🧟", "🦹", "💀"];
 let battleRunning = false;
+let pendingEnemies = null;
+let battleReward = 0;
 
-function makeFighter(lvl, isEnemy, emoji, image) {
+function enemyTier(w) {
+  let tier = DATA.enemies[0];
+  DATA.enemies.forEach(e => { if (w >= e.minWave) tier = e; });
+  return tier;
+}
+
+function makeFighter(lvl, isEnemy, emoji, img, name, isBoss) {
+  const boss = isBoss || false;
   return {
-    lvl,
-    isEnemy,
-    maxHp: 12 * lvl,
-    hp: 12 * lvl,
-    atk: 3 * lvl,
-    emoji: emoji,
-    image: image
+    lvl, isEnemy, emoji, img, name, boss,
+    maxHp: Math.round(12 * lvl * (boss ? 2.2 : 1)),
+    hp: Math.round(12 * lvl * (boss ? 2.2 : 1)),
+    atk: Math.round(3 * lvl * (boss ? 1.3 : 1))
   };
 }
 
 function getPlayerTeam() {
+  const boost = getUtilityBoost(); // bonus % des Trésors sur la grille
   return state.grid
     .filter(item => item && item.chain === 'creatures')
     .map(item => {
-      const data = ITEMS.creatures[item.level - 1];
-      return makeFighter(item.level, false, data.emoji, data.image);
+      const data = DATA.chains.creatures.items[item.level - 1];
+      const f = makeFighter(item.level, false, data.emoji, data.img, dl(data), false);
+      f.atk = Math.round(f.atk * (1 + boost / 100));
+      return f;
     });
 }
 
-function getEnemyTeam() {
-  const w = state.wave;
-  const count = Math.min(1 + Math.floor(w / 2), 4);
+function getEnemyTeam(w) {
+  const boss = w % 5 === 0;
+  const tier = enemyTier(w);
   const team = [];
-  for (let i = 0; i < count; i++) {
-    const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.round(w / 2) + (i === 0 ? 1 : 0)));
-    const emoji = ENEMIES[Math.min(lvl - 1, ENEMIES.length - 1)];
-    // Pour l'instant, les ennemis n'ont pas d'images, on met null
-    team.push(makeFighter(lvl, true, emoji, null));
+  if (boss) {
+    const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.ceil(w / 2) + 1));
+    team.push(makeFighter(lvl, true, tier.emoji, null, dl(tier), true));
+  } else {
+    const count = Math.min(1 + Math.floor(w / 2), 4);
+    for (let i = 0; i < count; i++) {
+      const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.round(w / 2) + (i === 0 ? 1 : 0)));
+      team.push(makeFighter(lvl, true, tier.emoji, null, dl(tier), false));
+    }
   }
   return team;
 }
@@ -40,18 +52,28 @@ function getEnemyTeam() {
 // ----- Affichage pré-combat -----
 function setupBattle() {
   if (battleRunning) return;
-  document.getElementById("wave-label").textContent = t('wave_label') + " " + state.wave;
-  document.getElementById("reward-label").textContent =
-    t('reward_label') + " : " + (15 * state.wave) + " 🪙";
+  const w = state.wave;
+  const boss = w % 5 === 0;
+  battleReward = 15 * w * (boss ? 3 : 1);
 
+  document.getElementById("wave-label").textContent =
+    t('wave_label') + " " + w + (boss ? " 👑" : "");
+  document.getElementById("reward-label").textContent =
+    t('reward_label') + " : " + battleReward + " 🪙";
+
+  pendingEnemies = getEnemyTeam(w);
   drawSide("player-side", getPlayerTeam());
-  drawSide("enemy-side", getEnemyTeam());
+  drawSide("enemy-side", pendingEnemies);
 
   const team = getPlayerTeam();
   const btn = document.getElementById("fight-btn");
   btn.disabled = team.length === 0;
   btn.textContent = team.length === 0 ? t('btn_no_creatures') : t('btn_fight');
-  log(t('log_army') + team.length + t('log_ready'));
+
+  const boost = getUtilityBoost();
+  document.getElementById("battle-log").innerHTML = "";
+  log(t('log_army') + team.length + t('log_ready') + boost + t('log_boost_end'));
+  if (boss) log(t('log_boss'));
 }
 
 function drawSide(id, team) {
@@ -59,19 +81,28 @@ function drawSide(id, team) {
   el.innerHTML = "";
   team.forEach((f, i) => {
     const d = document.createElement("div");
-    d.className = "fighter" + (f.isEnemy ? " enemy" : "");
+    d.className = "fighter" + (f.isEnemy ? " enemy" : "") + (f.boss ? " boss" : "");
     d.id = id + "-" + i;
-    
-    let content = '';
-    if (f.image) {
-      content = '<img src="' + f.image + '" style="width:40px;height:40px;object-fit:contain;display:block;margin:0 auto;">';
+    let content;
+    if (f.img) {
+      const im = document.createElement("img");
+      im.src = f.img;
+      im.onerror = function () { this.remove(); };
+      d.appendChild(im);
     } else {
-      content = '<span class="emoji">' + f.emoji + '</span>';
+      const em = document.createElement("span");
+      em.className = "emoji";
+      em.textContent = f.emoji;
+      d.appendChild(em);
     }
-    
-    d.innerHTML = content +
-      '<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>' +
-      '<small>' + t('lvl') + f.lvl + '</small>';
+    const bar = document.createElement("div");
+    bar.className = "hp-bar";
+    bar.innerHTML = '<div class="hp-fill" style="width:100%"></div>';
+    d.appendChild(bar);
+    const badge = document.createElement("span");
+    badge.className = "lvl-badge";
+    badge.textContent = t('lvl') + f.lvl;
+    d.appendChild(badge);
     el.appendChild(d);
   });
 }
@@ -89,7 +120,7 @@ document.getElementById("fight-btn").addEventListener("click", () => {
   document.getElementById("fight-btn").disabled = true;
 
   let players = getPlayerTeam();
-  let enemies = getEnemyTeam();
+  let enemies = pendingEnemies || getEnemyTeam(state.wave);
   drawSide("player-side", players);
   drawSide("enemy-side", enemies);
   document.getElementById("battle-log").innerHTML = "";
@@ -135,18 +166,24 @@ function checkEnd(players, enemies, timer) {
   battleRunning = false;
 
   if (pAlive) {
-    const reward = 15 * state.wave;
-    state.coins += reward;
-    state.wave += 1;
-    log(t('log_victory') + reward + " 🪙");
-    
-    const empty = state.grid.findIndex(v => v === null);
-    if (empty >= 0) {
-      const chains = ['eco', 'creatures', 'utility'];
-      const randomChain = chains[Math.floor(Math.random() * chains.length)];
-      state.grid[empty] = { chain: randomChain, level: 1 };
-      log(t('log_chest'));
+    const boss = state.wave % 5 === 0;
+    state.coins += battleReward;
+    const xpGain = (3 + Math.floor(state.wave / 2)) * (boss ? 3 : 1);
+    addXp(xpGain);
+    log(t('log_victory') + battleReward + " 🪙");
+    log(t('log_xp') + " (+" + xpGain + ")");
+
+    // FRAGMENT : le combat nourrit la grille de fusion
+    if (boss) {
+      if (!spawnItem("utility", 2)) { state.coins += 20; log(t('log_grid_full')); }
+      else log(t('log_fragment_util'));
+    } else if (Math.random() < 0.6) {
+      const lvl = Math.random() < 0.75 ? 1 : 2;
+      if (!spawnItem("creatures", lvl)) { state.coins += 20; log(t('log_grid_full')); }
+      else log(t('log_fragment_crea'));
     }
+
+    state.wave += 1;
   } else {
     state.coins += 5;
     log(t('log_defeat'));
@@ -154,5 +191,12 @@ function checkEnd(players, enemies, timer) {
   save();
   render();
   setTimeout(setupBattle, 1500);
+  return true;
+}
+
+function spawnItem(chain, level) {
+  const empty = state.grid.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+  if (!empty.length) return false;
+  state.grid[empty[Math.floor(Math.random() * empty.length)]] = { chain, level };
   return true;
 }
