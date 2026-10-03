@@ -1,26 +1,29 @@
-// ===== MERGE KINGDOM — Prototype M1/M2 =====
-// Grille de fusion tactile + sauvegarde locale
+// ===== MERGE KINGDOM — M1/M2 + économie anti-blocage =====
 
-const SIZE = 16;               // grille 4x4
+const SIZE = 16;
 const SPAWN_COST = 10;
-const MERGE_REWARD = 5;        // pièces gagnées par fusion
+const MERGE_REWARD = 5;
 const MAX_LEVEL = 6;
+const MINE_RATE = 15000;   // 15 secondes
+const MINE_GAIN = 2;
 
-// Créatures par niveau (émojis = placeholders, remplacés par des sprites en Phase 2)
 const CREATURES = ["🐣", "🐥", "🐔", "🦃", "🦅", "🐉"];
 
-// ----- État du jeu -----
 let state = load() || {
   coins: 50,
-  grid: Array(SIZE).fill(0)  // 0 = vide, sinon niveau 1..6
+  wave: 1,
+  grid: Array(SIZE).fill(0)
 };
 
 function save() {
   localStorage.setItem("mergeKingdom", JSON.stringify(state));
 }
 function load() {
-  try { return JSON.parse(localStorage.getItem("mergeKingdom")); }
-  catch { return null; }
+  try {
+    const s = JSON.parse(localStorage.getItem("mergeKingdom"));
+    if (s && !s.wave) s.wave = 1;   // compatibilité anciennes sauvegardes
+    return s;
+  } catch { return null; }
 }
 
 // ----- Rendu -----
@@ -48,7 +51,6 @@ function render() {
       badge.className = "lvl-badge";
       badge.textContent = "Nv" + lvl;
       cell.appendChild(badge);
-
       cell.appendChild(c);
       attachDrag(c);
     }
@@ -58,9 +60,7 @@ function render() {
 
 // ----- Invocation -----
 spawnBtn.addEventListener("click", () => {
-  const empty = state.grid
-    .map((v, i) => v === 0 ? i : -1)
-    .filter(i => i >= 0);
+  const empty = state.grid.map((v, i) => v === 0 ? i : -1).filter(i => i >= 0);
   if (!empty.length || state.coins < SPAWN_COST) return;
 
   state.coins -= SPAWN_COST;
@@ -71,7 +71,15 @@ spawnBtn.addEventListener("click", () => {
   board.children[idx].classList.add("pop");
 });
 
-// ----- Drag & Drop tactile (Pointer Events : marche doigt + souris) -----
+// ----- Mine passive (anti-blocage + rétention) -----
+setInterval(() => {
+  state.coins += MINE_GAIN;
+  save();
+  coinEl.textContent = state.coins;
+  spawnBtn.disabled = state.coins < SPAWN_COST || !state.grid.includes(0);
+}, MINE_RATE);
+
+// ----- Drag & Drop tactile -----
 const ghost = document.createElement("div");
 ghost.id = "ghost";
 document.body.appendChild(ghost);
@@ -95,15 +103,14 @@ document.addEventListener("pointermove", e => {
 });
 document.addEventListener("pointerup", e => {
   if (dragFrom < 0) return;
-  const target = document.elementFromPoint(e.clientX, e.clientY)
-    ?.closest(".cell");
+  const target = document.elementFromPoint(e.clientX, e.clientY)?.closest(".cell");
   if (target) tryMerge(dragFrom, +target.dataset.index);
   endDrag();
 });
 
 function moveGhost(e) {
   ghost.style.left = e.clientX + "px";
-  ghost.style.top = (e.clientY - 60) + "px"; // au-dessus du doigt
+  ghost.style.top = (e.clientY - 60) + "px";
 }
 
 function endDrag() {
@@ -113,7 +120,6 @@ function endDrag() {
   render();
 }
 
-// Surbrillance des cibles valides pendant le drag
 function highlightTargets() {
   const lvl = state.grid[dragFrom];
   document.querySelectorAll(".cell").forEach(cell => {
@@ -123,21 +129,18 @@ function highlightTargets() {
   });
 }
 
-// ----- Logique de fusion -----
 function tryMerge(from, to) {
   if (from === to) return;
   const a = state.grid[from];
   const b = state.grid[to];
 
   if (b === 0) {
-    // Déplacement simple vers case vide
     state.grid[to] = a;
     state.grid[from] = 0;
   } else if (a === b && a < MAX_LEVEL) {
-    // FUSION !
     state.grid[to] = a + 1;
     state.grid[from] = 0;
-    state.coins += MERGE_REWARD * a;  // récompense progressive
+    state.coins += MERGE_REWARD * a;
     save();
     render();
     board.children[to].classList.add("pop");
@@ -146,6 +149,20 @@ function tryMerge(from, to) {
   save();
 }
 
+// ----- Navigation entre écrans -----
+const navMerge = document.getElementById("nav-merge");
+const navBattle = document.getElementById("nav-battle");
+
+navMerge.addEventListener("click", () => switchScreen("merge"));
+navBattle.addEventListener("click", () => switchScreen("battle"));
+
+function switchScreen(name) {
+  document.getElementById("screen-merge").classList.toggle("active", name === "merge");
+  document.getElementById("screen-battle").classList.toggle("active", name === "battle");
+  navMerge.classList.toggle("active", name === "merge");
+  navBattle.classList.toggle("active", name === "battle");
+  if (name === "battle") setupBattle();  // défini dans battle.js
+}
+
 // ----- Démarrage -----
 render();
-
