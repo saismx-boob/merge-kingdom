@@ -3,14 +3,15 @@
 const ENEMIES = ["👺", "👹", "👿", "🧟", "🦹", "💀"];
 let battleRunning = false;
 
-function makeFighter(lvl, isEnemy, emoji) {
+function makeFighter(lvl, isEnemy, emoji, image) {
   return {
     lvl,
     isEnemy,
     maxHp: 12 * lvl,
     hp: 12 * lvl,
     atk: 3 * lvl,
-    emoji: emoji
+    emoji: emoji,
+    image: image
   };
 }
 
@@ -19,7 +20,7 @@ function getPlayerTeam() {
     .filter(item => item && item.chain === 'creatures')
     .map(item => {
       const data = ITEMS.creatures[item.level - 1];
-      return makeFighter(item.level, false, data.emoji);
+      return makeFighter(item.level, false, data.emoji, data.image);
     });
 }
 
@@ -30,7 +31,8 @@ function getEnemyTeam() {
   for (let i = 0; i < count; i++) {
     const lvl = Math.max(1, Math.min(MAX_LEVEL, Math.round(w / 2) + (i === 0 ? 1 : 0)));
     const emoji = ENEMIES[Math.min(lvl - 1, ENEMIES.length - 1)];
-    team.push(makeFighter(lvl, true, emoji));
+    // Pour l'instant, les ennemis n'ont pas d'images, on met null
+    team.push(makeFighter(lvl, true, emoji, null));
   }
   return team;
 }
@@ -59,8 +61,15 @@ function drawSide(id, team) {
     const d = document.createElement("div");
     d.className = "fighter" + (f.isEnemy ? " enemy" : "");
     d.id = id + "-" + i;
-    d.innerHTML =
-      '<span class="emoji">' + f.emoji + '</span>' +
+    
+    let content = '';
+    if (f.image) {
+      content = '<img src="' + f.image + '" style="width:40px;height:40px;object-fit:contain;display:block;margin:0 auto;">';
+    } else {
+      content = '<span class="emoji">' + f.emoji + '</span>';
+    }
+    
+    d.innerHTML = content +
       '<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>' +
       '<small>' + t('lvl') + f.lvl + '</small>';
     el.appendChild(d);
@@ -131,7 +140,6 @@ function checkEnd(players, enemies, timer) {
     state.wave += 1;
     log(t('log_victory') + reward + " 🪙");
     
-    // Récompense : un objet de base aléatoire
     const empty = state.grid.findIndex(v => v === null);
     if (empty >= 0) {
       const chains = ['eco', 'creatures', 'utility'];
