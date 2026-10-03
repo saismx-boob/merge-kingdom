@@ -22,7 +22,7 @@ function makeFighter(lvl, isEnemy, emoji, img, name, isBoss) {
 
 function getPlayerTeam() {
   const boost = getUtilityBoost();
-  const am = atkMult(); // bonus Mami Wata
+  const am = atkMult();
   return state.grid
     .filter(item => item && item.chain === 'creatures')
     .map(item => {
@@ -83,6 +83,7 @@ function setupBattle() {
 
 function drawSide(id, team) {
   const el = document.getElementById(id);
+  if (!el) return;
   el.innerHTML = "";
   team.forEach((f, i) => {
     const d = document.createElement("div");
@@ -94,7 +95,6 @@ function drawSide(id, team) {
     em.className = "emoji";
     em.textContent = f.emoji;
 
-    // Sprite ennemi depuis la spritesheet dédiée (si disponible)
     if (f.isEnemy && SPR.enemies && f.sheetCol !== undefined) {
       const s = DATA.sprites;
       em.style.backgroundImage = "url('" + s.enemiesSheet + "')";
@@ -109,7 +109,6 @@ function drawSide(id, team) {
       em.textContent = "";
     }
 
-    // Sprite joueur depuis la feuille d'items (rangée creatures)
     if (!f.isEnemy && SPR.items && f.img) {
       const s = DATA.sprites;
       const row = s.rowOrder.indexOf("creatures");
@@ -143,6 +142,7 @@ function drawSide(id, team) {
 
 function log(msg) {
   const l = document.getElementById("battle-log");
+  if (!l) return;
   l.innerHTML += msg + "<br>";
   l.scrollTop = l.scrollHeight;
 }
@@ -220,7 +220,9 @@ function checkEnd(players, enemies, timer) {
     state.wave += 1;
     const ready = DATA.regions.find(r =>
       state.unlockedRegions.includes(r.id) && !pur(r.id) && hasBeatenWave(r.freeWave));
-    if (ready) showToast("🗺️ " + t('btn_purify') + " : " + dl({ fr: r0(ready) }));
+    if (ready) {
+      showToast("🗺️ " + t('btn_purify') + " : " + r0(ready));
+    }
   } else {
     state.coins += 5;
     log(t('log_defeat'));
