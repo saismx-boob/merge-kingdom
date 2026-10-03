@@ -7,42 +7,43 @@ const MINE_GAIN = 2;
 const MAX_LEVEL = 10;
 
 // --- Configuration des 3 Chaînes de Fusion ---
+// Ajout de la propriété "image" pour chaque objet
 const ITEMS = {
   eco: [
-    { name: "Graine de Lumière", emoji: "🌱", reward: 1 },
-    { name: "Fleur de Lune", emoji: "🌸", reward: 3 },
-    { name: "Arbre à Étoiles", emoji: "🌳", reward: 8 },
-    { name: "Fontaine de Rêves", emoji: "⛲", reward: 15 },
-    { name: "Cristal de l'Aube", emoji: "💎", reward: 30 },
-    { name: "Sanctuaire de Lumière", emoji: "🏛️", reward: 60 },
-    { name: "Cœur d'Aetheria", emoji: "❤️", reward: 120 },
-    { name: "Étoile Mère", emoji: "⭐", reward: 250 },
-    { name: "Galaxie en Bouteille", emoji: "🌌", reward: 500 },
-    { name: "Source de l'Univers", emoji: "🌠", reward: 1000 }
+    { name: "Graine de Lumière", emoji: "🌱", image: "assets/eco_1.png", reward: 1 },
+    { name: "Fleur de Lune", emoji: "🌸", image: "assets/eco_2.png", reward: 3 },
+    { name: "Arbre à Étoiles", emoji: "🌳", image: "assets/eco_3.png", reward: 8 },
+    { name: "Fontaine de Rêves", emoji: "⛲", image: "assets/eco_4.png", reward: 15 },
+    { name: "Cristal de l'Aube", emoji: "💎", image: "assets/eco_5.png", reward: 30 },
+    { name: "Sanctuaire de Lumière", emoji: "🏛️", image: "assets/eco_6.png", reward: 60 },
+    { name: "Cœur d'Aetheria", emoji: "❤️", image: "assets/eco_7.png", reward: 120 },
+    { name: "Étoile Mère", emoji: "⭐", image: "assets/eco_8.png", reward: 250 },
+    { name: "Galaxie en Bouteille", emoji: "🌌", image: "assets/eco_9.png", reward: 500 },
+    { name: "Source de l'Univers", emoji: "🌠", image: "assets/eco_10.png", reward: 1000 }
   ],
   creatures: [
-    { name: "Éclat Stellaire", emoji: "✨", damage: 1 },
-    { name: "Poussin Lunaire", emoji: "🐣", damage: 3 },
-    { name: "Petit Renard Céleste", emoji: "🦊", damage: 8 },
-    { name: "Lapin des Nuages", emoji: "🐰", damage: 15 },
-    { name: "Dragon de Poche", emoji: "🐉", damage: 30 },
-    { name: "Licorne Stellaire", emoji: "🦄", damage: 60 },
-    { name: "Phénix Doux", emoji: "🦅", damage: 120 },
-    { name: "Baleine Céleste", emoji: "🐋", damage: 250 },
-    { name: "Gardien d'Aetheria", emoji: "🛡️", damage: 500 },
-    { name: "Avatar de Lumo", emoji: "🌟", damage: 1000 }
+    { name: "Éclat Stellaire", emoji: "✨", image: "assets/crea_1.png", damage: 1 },
+    { name: "Poussin Lunaire", emoji: "🐣", image: "assets/crea_2.png", damage: 3 },
+    { name: "Petit Renard Céleste", emoji: "🦊", image: "assets/crea_3.png", damage: 8 },
+    { name: "Lapin des Nuages", emoji: "🐰", image: "assets/crea_4.png", damage: 15 },
+    { name: "Dragon de Poche", emoji: "🐉", image: "assets/crea_5.png", damage: 30 },
+    { name: "Licorne Stellaire", emoji: "🦄", image: "assets/crea_6.png", damage: 60 },
+    { name: "Phénix Doux", emoji: "🦅", image: "assets/crea_7.png", damage: 120 },
+    { name: "Baleine Céleste", emoji: "🐋", image: "assets/crea_8.png", damage: 250 },
+    { name: "Gardien d'Aetheria", emoji: "🛡️", image: "assets/crea_9.png", damage: 500 },
+    { name: "Avatar de Lumo", emoji: "🌟", image: "assets/crea_10.png", damage: 1000 }
   ],
   utility: [
-    { name: "Éclat de Cristal", emoji: "🔮", boost: 1 },
-    { name: "Lanterne Flottante", emoji: "🏮", boost: 2 },
-    { name: "Autel Magique", emoji: "🕯️", boost: 5 },
-    { name: "Portail Céleste", emoji: "🌀", boost: 10 },
-    { name: "Forge Astrale", emoji: "⚒️", boost: 20 },
-    { name: "Bibliothèque des Rêves", emoji: "📚", boost: 40 },
-    { name: "Observatoire", emoji: "🔭", boost: 80 },
-    { name: "Forteresse de Nuages", emoji: "☁️", boost: 150 },
-    { name: "Citadelle Céleste", emoji: "🏰", boost: 300 },
-    { name: "Palais de Lumo", emoji: "👑", boost: 600 }
+    { name: "Éclat de Cristal", emoji: "🔮", image: "assets/util_1.png", boost: 1 },
+    { name: "Lanterne Flottante", emoji: "🏮", image: "assets/util_2.png", boost: 2 },
+    { name: "Autel Magique", emoji: "🕯️", image: "assets/util_3.png", boost: 5 },
+    { name: "Portail Céleste", emoji: "🌀", image: "assets/util_4.png", boost: 10 },
+    { name: "Forge Astrale", emoji: "⚒️", image: "assets/util_5.png", boost: 20 },
+    { name: "Bibliothèque des Rêves", emoji: "📚", image: "assets/util_6.png", boost: 40 },
+    { name: "Observatoire", emoji: "🔭", image: "assets/util_7.png", boost: 80 },
+    { name: "Forteresse de Nuages", emoji: "☁️", image: "assets/util_8.png", boost: 150 },
+    { name: "Citadelle Céleste", emoji: "🏰", image: "assets/util_9.png", boost: 300 },
+    { name: "Palais de Lumo", emoji: "👑", image: "assets/util_10.png", boost: 600 }
   ]
 };
 
@@ -83,8 +84,21 @@ function render() {
       
       const c = document.createElement("div");
       c.className = "creature";
-      c.textContent = data.emoji;
       c.dataset.index = i;
+      
+      // Utilisation de l'image si disponible, sinon emoji
+      if (data.image) {
+        const img = document.createElement("img");
+        img.src = data.image;
+        img.alt = data.emoji;
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "contain";
+        img.onerror = function() { this.style.display = 'none'; c.textContent = data.emoji; };
+        c.appendChild(img);
+      } else {
+        c.textContent = data.emoji;
+      }
 
       const badge = document.createElement("span");
       badge.className = "lvl-badge";
@@ -134,7 +148,22 @@ function attachDrag(el) {
   el.addEventListener("pointerdown", e => {
     dragFrom = +el.dataset.index;
     el.classList.add("dragging");
-    ghost.textContent = el.textContent;
+    // Pour le ghost, on essaie de prendre l'image ou l'emoji
+    const img = el.querySelector('img');
+    ghost.textContent = img ? '' : el.textContent;
+    if (img) {
+      ghost.style.backgroundImage = `url('${img.src}')`;
+      ghost.style.backgroundSize = 'contain';
+      ghost.style.backgroundRepeat = 'no-repeat';
+      ghost.style.backgroundPosition = 'center';
+      ghost.style.width = '60px';
+      ghost.style.height = '60px';
+    } else {
+      ghost.style.backgroundImage = 'none';
+      ghost.style.width = 'auto';
+      ghost.style.height = 'auto';
+    }
+    
     ghost.style.display = "block";
     moveGhost(e);
     highlightTargets();
@@ -160,6 +189,7 @@ function moveGhost(e) {
 function endDrag() {
   dragFrom = -1;
   ghost.style.display = "none";
+  ghost.style.backgroundImage = 'none';
   document.querySelectorAll(".highlight").forEach(c => c.classList.remove("highlight"));
   render();
 }
