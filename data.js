@@ -65,6 +65,9 @@ const DATA = {
     { level: 3, chance: 0.03 }
   ],
 
+  // Chance qu'un tap produise un item bonus supplémentaire
+  bonusSpawnChance: 0.20,
+
   npcs: {
     massiva:  { emoji: "👑", fr: "Prince Massiva",       en: "Prince Massiva" },
     tanit:    { emoji: "🏺", fr: "Marchande Tanit",      en: "Tanit the Merchant" },
@@ -148,11 +151,11 @@ const DATA = {
   ],
 
   enemies: [
-    { minWave: 1,  emoji: "👤", fr: "Ombre Errante",     en: "Wandering Shadow" },
-    { minWave: 5,  emoji: "🦂", fr: "Scorpion d'Ombre",  en: "Shadow Scorpion" },
-    { minWave: 10, emoji: "🐍", fr: "Serpent du Néant",   en: "Void Serpent" },
-    { minWave: 15, emoji: "💀", fr: "Spectre de Sel",     en: "Salt Spectre" },
-    { minWave: 20, emoji: "👹", fr: "Dévorant des Dunes", en: "Dune Devourer" },
-    { minWave: 25, emoji: "🌑", fr: "Avatar de l'Éclipse",en: "Eclipse Avatar" }
+    { minWave: 1,  emoji: "🦇", fr: "Ombre Errante",      en: "Wandering Shadow" },
+    { minWave: 5,  emoji: "🦂", fr: "Scorpion d'Ombre",   en: "Shadow Scorpion" },
+    { minWave: 10, emoji: "🐍", fr: "Serpent du Néant",    en: "Void Serpent" },
+    { minWave: 15, emoji: "💀", fr: "Spectre de Sel",      en: "Salt Spectre" },
+    { minWave: 20, emoji: "👹", fr: "Dévorant des Dunes",  en: "Dune Devourer" },
+    { minWave: 25, emoji: "🌑", fr: "Avatar de l'Éclipse", en: "Eclipse Avatar" }
   ]
 };
