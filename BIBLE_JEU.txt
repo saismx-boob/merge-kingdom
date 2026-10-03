@@ -1,0 +1,201 @@
+================================================================
+ BIBLE DE PROJET — "LUMO : LES ROUTES DE L'OR"
+ Version 3 — Document de référence pour humains & IA collaborateurs
+================================================================
+
+► COMMENT UTILISER CE DOCUMENT
+Vous êtes une IA (ou un humain) invité(e) à contribuer au code ou au
+design de ce jeu. Lisez TOUT ce document avant de proposer quoi que
+ce soit. Règles absolues du projet :
+ R1. Toute modification d'un fichier se fait en REMPLAÇANT LE FICHIER
+     ENTIER (pas de patches partiels) — évite fautes de frappe/oublis.
+ R2. Tout le contenu (objets, PNJ, commandes, régions, ennemis) vit
+     dans data.js. Équilibrer = modifier data.js, JAMAIS le moteur.
+ R3. Tout texte est bilingue FR/EN (champs fr: / en: + lang.js).
+ R4. Aucune dépendance payante : vanilla JS, GitHub Pages, 0$.
+ R5. Cible : mobile web d'abord (smartphone Tecno Pova 6), APK via
+     Capacitor plus tard. Grille pensée pour écran ~6,8".
+
+----------------------------------------------------------------
+1. PITCH
+----------------------------------------------------------------
+Merge game (fusion d'objets sur grille) + tower defense léger, dans
+un univers d'Afrique du Nord + Afrique de l'Ouest unis par les
+routes caravanières transsahariennes. Le joueur incarne Lumo, guide
+de caravane, qui restaure "le Réseau" — le commerce et les contes
+entre Numidie (Nord) et les empires du Sahel (Sud) —face aux
+Prêtres de l'Éclipse qui corrompent les terres. Purifier un Prêtre
+(le "méchant" local) le libère : il devient un allié offrant un
+bonus permanent. Ton : chaleureux, épique-serein, conteur (griot).
+
+DIFFÉRENCIATEUR : premier merge game à identité afro-fantasy
+(Numidie/Massinissa/Jugurtha/Kahina-Dihya + Wagadu/Sunjata/Bida +
+Mami Wata + folklore des tambours). Aucun plagiat des jeux chinois :
+mécaniques de genre communes (merge/commandes/énergie) mais univers,
+noms, histoire et direction artistique 100% originaux.
+
+----------------------------------------------------------------
+2. BOUCLES DE JEU
+----------------------------------------------------------------
+BOUCLE COURTE (30 s - 2 min) — dopamine :
+ Taper un générateur (coûte 1⚡, 20% de chance d'item bonus, 20%
+ de taps gratuits si Kossa libéré) → items Nv1-3 → glisser pour
+ fusionner 2 identiques (NvX + NvX = NvX+1) → livrer les COMMANDES
+ des PNJ → or + XP + fragments (le combat nourrit la grille).
+
+BOUCLE MOYENNE (par session) :
+ L'or achète de l'énergie (+10 pour 40🪙), paie les Racines d'Ombre
+ (cases verrouillées) et fonde les relais sur la Carte.
+ Le combat (vagues) donne or, XP, fragments, et DÉBLOQUE la
+ purification des régions.
+
+BOUCLE LONGUE (jours) :
+ XP → niveaux → nouvelles commandes. Or → nouvelles régions.
+ Vagues → purification des Prêtres → 6 alliés à libérer, chacun
+ avec bonus permanent. Fin : purifier l'Avatar de l'Éclipse.
+
+CHIFFRES CLÉS (data.js, modifiables) :
+ - Énergie : max 80, régén 1/45 s, départ 40. Achat : +10 / 40🪙.
+ - Grille : 7×7 = 49 cases. Racines : 29 cases verrouillées au sud,
+  niveaux 1-6, brisées par fusion adjacente de niveau >= requis,
+  ou payées 20×2^(n-1) 🪙 (20/40/80/160/320/640). +2⭐ par racine.
+ - Drop générateur : 85% Nv1 / 12% Nv2 / 3% Nv3. Bonus +1 item 20%.
+ - XP par niveau : 20 + 25×(niveau-1). Max joueur 20.
+ - Combat : vague w → ennemis 1+floor(w/2) (max 4), lvl≈w/2,
+  HP=12×lvl, ATK=3×lvl. Boss (w%5=0) : HP×2.2, ATK×1.3, récompense×3.
+ - Récompense vague : 15×w (× mult or). Fragments : 60% chance
+  créature Nv1-2 ; boss → trésor Nv2 garanti.
+
+----------------------------------------------------------------
+3. LES 3 CHAÎNES DE FUSION (30 objets, 10 niveaux chacune)
+----------------------------------------------------------------
+CHAÎNE ÉCO "Richesses" (valeur or récoltée au tap) :
+ Graine d'Ambre 1 / Fleur de Sel 3 / Palmier Doré 8 /
+ Puits de l'Oasis 18 / Amphore d'Or 40 / Grenier de Timgad 90 /
+ Coffre de Tanit 200 / Trésor de Massinissa 450 /
+ Caravane d'Or 1000 / Étoile des Deux Rives 2500.
+CHAÎNE CRÉATURES "Esprits-Gardiens" (ATK au combat) :
+ Fennec Étoilé 1 / Scorpion d'Ifri 3 / Cheval Numide 8 /
+ Crocodile du Fleuve 15 / Anansi le Malin 30 / Éléphant de Guerre 60 /
+ Bida l'Arc-en-Ciel 120 / Gurzil le Taureau 250 /
+ Ogun le Forgeron 500 / Lion de Sunjata 1000.
+CHAÎNE UTILITAIRE "Trésors des Ancêtres" (boost % ATK de l'armée) :
+ Perle de Tanit 2 / Lanterne de l'Oasis 4 / Tambour Parlant 6 /
+ Tapis des Contes 8 / Boussole des Sables 10 / Sceau de Jugurtha 13 /
+ Awalé des Ancêtres 16 / Balance de Tanit 20 /
+ Astrolabe de Tombouctou 25 / Trône des Deux Rives 30.
+Boost total = somme des boosts présents sur la grille (max ~+150%).
+
+----------------------------------------------------------------
+4. LA CARTE "LA ROUTE DE L'OR" (meta-jeu)
+----------------------------------------------------------------
+6 régions, 3 états : verrouillée (payer or + niveau) → corrompue
+(un Prêtre de l'Éclipse, purifier en battant la Vague X) → purifiée
+(allié libéré, bonus permanent, fond d'écran du jeu change).
+ R1 Timgad (🏛️) : relais gratuit, Vague 5 → Dihya 🐪 : +10% or.
+ R2 Oasis de Sel (🏝️) : 500🪙 Nv3, Vague 8 → Azizi 🧞 : énergie 25%.
+ R3 Ruines de Wagadu (🏜️) : 2000🪙 Nv5, Vague 12 → Bida 🐍 : +15% XP.
+ R4 Boucle du Fleuve (🦛) : 6000🪙 Nv7, Vague 16 → Mami Wata 🧜‍♀️ : +15% ATK.
+ R5 Forêt des Tambours (🌳) : 15000🪙 Nv9, Vague 20 → Kossa 🥁 : 20% taps gratuits.
+ R6 Trône de l'Éclipse (🌑) : 40000🪙 Nv12, Vague 25 → Aube 🌅 : +20% or & XP.
+Les multiplicateurs se cumulent. État sauvé : unlockedRegions /
+purifiedRegions dans localStorage.
+
+----------------------------------------------------------------
+5. PNJ & COMMANDES (logique narrative : chacun commande selon son rôle)
+----------------------------------------------------------------
+ 👑 Prince Massiva (Massinissa) : nourrit Timgad → commande ÉCO.
+ 🏺 Marchande Tanit : équipe les caravanes → commande TRÉSORS.
+ 🏹 Éclaireuse Yennenga : escorte sur la piste du sel → CRÉATURES.
+ 🕷️ Chroniqueur Anansi : témoins pour ses récits → CRÉATURES (petits).
+ ⚒️ Forgeron Kofi : forge contre l'Éclipse → TRÉSORS & ÉCO.
+12 commandes dans data.js (minLevel progressif 1→5), 3 affichées,
+remplacement aléatoire pondéré vers le contenu de haut niveau.
+
+----------------------------------------------------------------
+6. ENNEMIS
+----------------------------------------------------------------
+6 tiers par palier de vagues (minWave 1/5/10/15/20/25) :
+Ombre Errante 🦇 / Scorpion d'Ombre 🦂 / Serpent du Néant 🐍 /
+Spectre de Sel 💀 / Dévorant des Dunes 👹 / Avatar de l'Éclipse 🌑.
+Boss toutes les 5 vagues (une seule grosse unité).
+
+----------------------------------------------------------------
+7. ARCHITECTURE TECHNIQUE
+----------------------------------------------------------------
+Fichiers (vanilla JS, aucun framework) :
+ index.html   — squelette des 3 écrans (Royaume/Route/Combat) + HUD.
+ style.css    — tout le style + animations + états des régions.
+ data.js      — TOUT le contenu équilibrable (const DATA).
+ lang.js      — i18n FR/EN (const TRANSLATIONS, t(), setLanguage).
+ game.js      — moteur : état, save, énergie, grille, racines,
+                drag&drop, commandes, XP, bonus régions, sprites.
+ map.js       — écran Carte : débloquer/purifier les régions.
+ battle.js    — combat automatique par tours + fragments.
+Ordre de chargement : data → lang → game → map → battle.
+Sauvegarde : localStorage clé "routesDeLor_v1" (migration auto des
+anciens états : champs manquants = valeurs par défaut).
+Sprites : détection auto. Si assets/sprites/items.png existe (grille
+10 col × 3 rangées, cellules 128×128, rangées = eco/creatures/utility,
+colonnes = niveaux 1-10) il remplace les emojis partout (grille,
+combat, ghost de drag). Si assets/sprites/enemies.png existe (6 col
+× 1 rangée) il remplace les emojis ennemis. Sinon fallback emoji :
+JAMAIS de combattant/case invisible.
+Décors : assets/bg_<region>.png (1080×1920) appliqués au #bg-layer
+quand la région est purifiée ; fallback = dégradé CSS par région.
+
+----------------------------------------------------------------
+8. DIRECTION ARTISTIQUE (pour la production des assets)
+----------------------------------------------------------------
+PALETTE : nuit indigo #141b3d / ambre #ffd75e / orange #ff9a3c /
+or #ffce54 / terre #5c2e14 / violet XP #b98cf0 / vert vie #7ddf87.
+STYLE ITEMS & CRÉATURES : flat vector, contours épais arrondis,
+chibi (grosses têtes), rim light dorée haut-gauche, silhouettes
+lisibles en 30px, motifs géométriques (kente/bogolan) discrets.
+Rampe éco : vert→ambre→or blanc. Créatures : pelage naturel +
+marque stellaire lumineuse. Trésors : indigo + or (symbole Tanit).
+SPRITESHEET ITEMS : 1280×384 px, PNG transparent, grille stricte
+10×3 de cellules 128×128 (ordre = data.js, gauche→droite Nv1→Nv10).
+SPRITESHEET ENNEMIS : 768×128 px, 6 cellules 128×128.
+DÉCORS : silhouettes en couches + grosse lune/éclipse + poussière
+dorée + caravanes en ombres chinoises ; <500 Ko par image.
+DÉGRADÉS DE FALLBACK par région (data.js → gradient).
+Outils gratuits : Inkscape, Libresprite/Piskel, Photopea.
+INSPIRATIONS (respect, citer dans les crédits) : arts amazighs,
+bogolan malien, kente akan, symboles Adinkra ; contes d'Amadou
+Hampâté Bâ ; épopée de Sunjata ; légendes de Dihya/Kahina,
+Massinissa, Yennenga, Mami Wata, Bida.
+
+----------------------------------------------------------------
+9. ASSETS ATTENDUS (liste exacte des chemins)
+----------------------------------------------------------------
+ assets/sprites/items.png      (1280×384, 10×3)
+ assets/sprites/enemies.png    (768×128, 6×1)   [optionnel]
+ assets/bg_timgad.png  assets/bg_oasis.png   assets/bg_wagadu.png
+ assets/bg_fleuve.png  assets/bg_foret.png   assets/bg_trone.png
+ (1080×1920 ou 1080×2340, JPG accepté, <500 Ko)
+
+----------------------------------------------------------------
+10. ROADMAP
+----------------------------------------------------------------
+FAIT v3 : grille 7×7, racines, 3 générateurs, énergie, commandes,
+combat+boss+fragments, carte 6 régions, bonus permanents, i18n,
+spritesheets optionnels, décors dynamiques.
+PROCHAIN : juice sonore (jsfxr : pop de fusion montant en pitch,
+jingle de livraison, tambour au boss), onboarding scripté 5 min,
+événement temporaire "Caravane de l'Éclipse" (TD dédié 3 jours),
+statistiques session, export/import de sauvegarde, APK Capacitor.
+
+----------------------------------------------------------------
+11. POUR LES IA : MODE D'EMPLOI
+----------------------------------------------------------------
+- Toujours proposer le fichier COMPLET (règle R1).
+- Ne jamais inventer de contenu hors data.js ; les équilibres se
+  proposent sous forme de nouvelles valeurs de DATA avec justification.
+- Respecter le bilingue FR/EN sur tout texte joueur (R3).
+- Tester mentalement la migration de sauvegarde avant tout changement
+  de structure de state (champs nouveaux = défauts dans load()).
+- Performance cible : 60 fps sur un Tecno Pova 6 ; éviter les
+  re-rendus lourds par frame ; le jeu re-rend par action, pas en continu.
+================================================================
+
