@@ -91,7 +91,6 @@ function drawSide(id, team) {
     em.textContent = f.emoji;
     d.appendChild(em);
 
-    // Si une image existe, elle ne remplace l'emoji QUE si elle charge
     if (f.img) {
       const im = new Image();
       im.src = f.img;
@@ -207,7 +206,7 @@ function checkEnd(players, enemies, timer) {
 }
 
 function spawnItem(chain, level) {
-  const empty = state.grid.map((v, i) => v === null ? i : -1).filter(i => i >= 0);
+  const empty = emptyCells(); // respecte aussi les Racines 🔒
   if (!empty.length) return false;
   state.grid[empty[Math.floor(Math.random() * empty.length)]] = { chain, level };
   return true;
