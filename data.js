@@ -44,16 +44,16 @@ const DATA = {
     utility: {
       name_fr: "Trésors des Ancêtres", name_en: "Ancestors' Treasures", icon: "🔮",
       items: [
-        { fr: "Perle de Tanit",           en: "Pearl of Tanit",        emoji: "🔮", img: "assets/util_1.png",  boost: 2 },
-        { fr: "Lanterne de l'Oasis",      en: "Oasis Lantern",         emoji: "🏮", img: "assets/util_2.png",  boost: 4 },
-        { fr: "Tambour Parlant",          en: "Talking Drum",          emoji: "🪘", img: "assets/util_3.png",  boost: 6 },
-        { fr: "Tapis des Contes",         en: "Tale Carpet",           emoji: "🧶", img: "assets/util_4.png",  boost: 8 },
-        { fr: "Boussole des Sables",      en: "Sand Compass",          emoji: "🧭", img: "assets/util_5.png",  boost: 10 },
-        { fr: "Sceau de Jugurtha",        en: "Seal of Jugurtha",      emoji: "📜", img: "assets/util_6.png",  boost: 13 },
-        { fr: "Awalé des Ancêtres",       en: "Ancestors' Awalé",      emoji: "🎲", img: "assets/util_7.png",  boost: 16 },
-        { fr: "Balance de Tanit",         en: "Scales of Tanit",       emoji: "⚖️", img: "assets/util_8.png",  boost: 20 },
-        { fr: "Astrolabe de Tombouctou",  en: "Timbuktu Astrolabe",    emoji: "🔭", img: "assets/util_9.png",  boost: 25 },
-        { fr: "Trône des Deux Rives",     en: "Throne of Two Shores",  emoji: "👑", img: "assets/util_10.png", boost: 30 }
+        { fr: "Perle de Tanit",          en: "Pearl of Tanit",       emoji: "🔮", img: "assets/util_1.png",  boost: 2 },
+        { fr: "Lanterne de l'Oasis",     en: "Oasis Lantern",        emoji: "🏮", img: "assets/util_2.png",  boost: 4 },
+        { fr: "Tambour Parlant",         en: "Talking Drum",         emoji: "🪘", img: "assets/util_3.png",  boost: 6 },
+        { fr: "Tapis des Contes",        en: "Tale Carpet",          emoji: "🧶", img: "assets/util_4.png",  boost: 8 },
+        { fr: "Boussole des Sables",     en: "Sand Compass",         emoji: "🧭", img: "assets/util_5.png",  boost: 10 },
+        { fr: "Sceau de Jugurtha",       en: "Seal of Jugurtha",     emoji: "📜", img: "assets/util_6.png",  boost: 13 },
+        { fr: "Awalé des Ancêtres",      en: "Ancestors' Awalé",     emoji: "🎲", img: "assets/util_7.png",  boost: 16 },
+        { fr: "Balance de Tanit",        en: "Scales of Tanit",      emoji: "⚖️", img: "assets/util_8.png",  boost: 20 },
+        { fr: "Astrolabe de Tombouctou", en: "Timbuktu Astrolabe",   emoji: "🔭", img: "assets/util_9.png",  boost: 25 },
+        { fr: "Trône des Deux Rives",    en: "Throne of Two Shores", emoji: "👑", img: "assets/util_10.png", boost: 30 }
       ]
     }
   },
@@ -84,69 +84,86 @@ const DATA = {
   lockBaseCost: 20,
 
   regions: [
-    { id: "timgad", icon: "🏛️",
+    {
+      id: "timgad", icon: "🏛️",
       fr: "Timgad, la Porte du Nord", en: "Timgad, Gate of the North",
       priest_fr: "Prêtre des Cendres", priest_en: "Ash Priest",
       freed_fr: "Dihya, Reine des Aurès", freed_en: "Dihya, Queen of the Aurès",
-      freedEmoji: "🐪", unlock: { coins: 0, level: 1 }, freeWave: 5,
+      freedEmoji: "🐪",
+      unlock: { coins: 0, level: 1 }, freeWave: 5,
       gradient: "linear-gradient(170deg,#1a1430 0%,#4a2418 60%,#7a3d1a 100%)",
       bg: "assets/bg_timgad.png",
       bonus_fr: "+10% d'or (commandes & combats)", bonus_en: "+10% gold (orders & battles)",
       lore_fr: "Le Prêtre des Cendres étouffait les greniers de Timgad de suie. Dihya, libérée, rallume les fourriers de la cité.",
-      lore_en: "The Ash Priest choked Timgad's granaries with soot. Freed, Dihya relights the city's beacon fires." },
-    { id: "oasis", icon: "🏝️",
+      lore_en: "The Ash Priest choked Timgad's granaries with soot. Freed, Dihya relights the city's beacon fires."
+    },
+    {
+      id: "oasis", icon: "🏝️",
       fr: "L'Oasis de Sel", en: "The Salt Oasis",
       priest_fr: "Prêtre du Mirage", priest_en: "Mirage Priest",
       freed_fr: "Azizi, Djinn des Sables", freed_en: "Azizi, Djinn of Sands",
-      freedEmoji: "🧞", unlock: { coins: 500, level: 3 }, freeWave: 8,
+      freedEmoji: "🧞",
+      unlock: { coins: 500, level: 3 }, freeWave: 8,
       gradient: "linear-gradient(170deg,#0d1f2d 0%,#14504d 60%,#1a6b52 100%)",
       bg: "assets/bg_oasis.png",
       bonus_fr: "Énergie 25% plus rapide", bonus_en: "Energy 25% faster",
       lore_fr: "Le Mirage faisait tourner les puits en rond. Azizi, libéré, souffle à nouveau sur les caravanes assoiffées.",
-      lore_en: "The Mirage spun the wells in circles. Freed, Azizi breathes cool winds upon thirsty caravans again." },
-    { id: "wagadu", icon: "🏜️",
+      lore_en: "The Mirage spun the wells in circles. Freed, Azizi breathes cool winds upon thirsty caravans again."
+    },
+    {
+      id: "wagadu", icon: "🏜️",
       fr: "Ruines de Wagadu", en: "Ruins of Wagadu",
       priest_fr: "Prêtre du Silence", priest_en: "Silence Priest",
       freed_fr: "Bida, Serpent Arc-en-Ciel", freed_en: "Bida, Rainbow Serpent",
-      freedEmoji: "🐍", unlock: { coins: 2000, level: 5 }, freeWave: 12,
+      freedEmoji: "🐍",
+      unlock: { coins: 2000, level: 5 }, freeWave: 12,
       gradient: "linear-gradient(170deg,#241a10 0%,#5c4416 55%,#8a6a1e 100%)",
       bg: "assets/bg_wagadu.png",
       bonus_fr: "+15% XP", bonus_en: "+15% XP",
       lore_fr: "Le Silence avait arrêté les tambours d'or de Wagadu. Bida, libéré, recoud le fleuve du récit.",
-      lore_en: "Silence had stopped Wagadu's golden drums. Freed, Bida sews the river of story back together." },
-    { id: "fleuve", icon: "🦛",
+      lore_en: "Silence had stopped Wagadu's golden drums. Freed, Bida sews the river of story back together."
+    },
+    {
+      id: "fleuve", icon: "🦛",
       fr: "La Boucle du Fleuve", en: "The River Bend",
       priest_fr: "Prêtre des Crues", priest_en: "Flood Priest",
       freed_fr: "Mami Wata, Esprit des Eaux", freed_en: "Mami Wata, Water Spirit",
-      freedEmoji: "🧜‍♀️", unlock: { coins: 6000, level: 7 }, freeWave: 16,
+      freedEmoji: "🧜‍♀️",
+      unlock: { coins: 6000, level: 7 }, freeWave: 16,
       gradient: "linear-gradient(170deg,#0a1f24 0%,#114b46 55%,#17705b 100%)",
       bg: "assets/bg_fleuve.png",
       bonus_fr: "+15% ATK des Esprits", bonus_en: "+15% Spirit ATK",
       lore_fr: "Les Crues noyaient les ports de Tombouctou. Mami Wata, libérée, apaise le fleuve et double son or.",
-      lore_en: "The Floods drowned Timbuktu's ports. Freed, Mami Wata soothes the river and doubles its gold." },
-    { id: "foret", icon: "🌳",
+      lore_en: "The Floods drowned Timbuktu's ports. Freed, Mami Wata soothes the river and doubles its gold."
+    },
+    {
+      id: "foret", icon: "🌳",
       fr: "La Forêt des Tambours", en: "The Drum Forest",
       priest_fr: "Prêtre des Racines", priest_en: "Root Priest",
       freed_fr: "Kossa, Tambour Vivant", freed_en: "Kossa, Living Drum",
-      freedEmoji: "🥁", unlock: { coins: 15000, level: 9 }, freeWave: 20,
+      freedEmoji: "🥁",
+      unlock: { coins: 15000, level: 9 }, freeWave: 20,
       gradient: "linear-gradient(170deg,#0c1e0f 0%,#14401c 55%,#1d5c2a 100%)",
       bg: "assets/bg_foret.png",
       bonus_fr: "20% de taps de générateur gratuits", bonus_en: "20% free generator taps",
       lore_fr: "Les Racines volaient le rythme de la forêt. Kossa, libéré, rend aux tambours leur battement libre.",
-      lore_en: "The Roots stole the forest's rhythm. Freed, Kossa returns its free heartbeat to the drums." },
-    { id: "trone", icon: "🌑",
+      lore_en: "The Roots stole the forest's rhythm. Freed, Kossa returns its free heartbeat to the drums."
+    },
+    {
+      id: "trone", icon: "🌑",
       fr: "Le Trône de l'Éclipse", en: "The Eclipse Throne",
       priest_fr: "Avatar de l'Éclipse", priest_en: "Eclipse Avatar",
       freed_fr: "L'Aube Nouvelle", freed_en: "The New Dawn",
-      freedEmoji: "🌅", unlock: { coins: 40000, level: 12 }, freeWave: 25,
+      freedEmoji: "🌅",
+      unlock: { coins: 40000, level: 12 }, freeWave: 25,
       gradient: "linear-gradient(170deg,#0a0614 0%,#2a1140 55%,#451a55 100%)",
       bg: "assets/bg_trone.png",
       bonus_fr: "+20% or & XP", bonus_en: "+20% gold & XP",
       lore_fr: "Sur le Trône, l'Éclipse elle-même attendait. Brise-la : les deux rives ne feront plus qu'un dans l'Aube.",
-      lore_en: "Upon the Throne, the Eclipse itself waited. Shatter it: both shores will become one in the Dawn." }
+      lore_en: "Upon the Throne, the Eclipse itself waited. Shatter it: both shores will become one in the Dawn."
+    }
   ],
 
-  // ===== SCÈNES NARRATIVES (thème : Fusionner = Raconter) =====
   scenes: {
     intro: {
       gradient: "linear-gradient(170deg,#1a1430 0%,#4a2418 60%,#7a3d1a 100%)",
@@ -307,5 +324,4 @@ const DATA = {
     { npc: "tanit", minLevel: 5,
       fr: "La Caravane de l'Éclipse part à l'aube. Une Amphore d'Or scellera notre pacte avec les empires du Sud.",
       en: "The Eclipse Caravan leaves at dawn. A Golden Amphora will seal our pact with the empires of the South.",
-      requires: [ { chain: "eco", level: 5, qty: 1 } ],
-     
+      requires: [ { chain: "eco", level: 5, qty: 1 
