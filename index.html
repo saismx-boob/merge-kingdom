@@ -7,21 +7,42 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Barre du haut : monnaie -->
+  <!-- Barre du haut -->
   <header id="hud">
     <div id="coins">🪙 <span id="coin-count">50</span></div>
-    <div id="title">MERGE KINGDOM</div>
+    <nav>
+      <button class="nav-btn active" id="nav-merge">🏰 Royaume</button>
+      <button class="nav-btn" id="nav-battle">⚔️ Combat</button>
+    </nav>
   </header>
 
-  <!-- Grille de fusion 4x4 -->
-  <main id="board"></main>
+  <!-- ÉCRAN ROYAUME (merge) -->
+  <section id="screen-merge" class="screen active">
+    <main id="board"></main>
+    <footer>
+      <button id="spawn-btn">✨ Invoquer (10 🪙)</button>
+      <p id="hint">⛏️ Mine : +2 🪙 / 15s &nbsp;•&nbsp; Fusionne 2 créatures identiques !</p>
+    </footer>
+  </section>
 
-  <!-- Bouton invocation -->
-  <footer>
-    <button id="spawn-btn">✨ Invoquer (10 🪙)</button>
-    <p id="hint">Glisse 2 créatures identiques l'une sur l'autre pour les fusionner !</p>
-  </footer>
+  <!-- ÉCRAN COMBAT -->
+  <section id="screen-battle" class="screen">
+    <div id="battle-info">
+      <span id="wave-label">Vague 1</span>
+      <span id="reward-label">Récompense : 15 🪙</span>
+    </div>
+    <div id="arena">
+      <div id="enemy-side" class="side"></div>
+      <div id="vs">⚔️</div>
+      <div id="player-side" class="side"></div>
+    </div>
+    <div id="battle-log"></div>
+    <footer>
+      <button id="fight-btn">⚔️ LANCER LE COMBAT</button>
+    </footer>
+  </section>
 
   <script src="game.js"></script>
+  <script src="battle.js"></script>
 </body>
 </html>
