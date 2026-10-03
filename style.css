@@ -32,18 +32,19 @@ body {
   margin-left: 6px;
 }
 .nav-btn.active { background: #ffd700; color: #000; font-weight: bold; }
+#lang-toggle { background: rgba(255,255,255,0.2); font-weight: bold; }
 
 /* ----- Écrans ----- */
 .screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
 .screen.active { display: flex; }
 
-/* ----- Grille merge ----- */
+/* ----- Grille merge (6x6) ----- */
 #board {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  padding: 16px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 4px;
+  padding: 8px;
   max-width: 500px;
   width: 100%;
   margin: 0 auto;
@@ -54,11 +55,11 @@ body {
   aspect-ratio: 1;
   background: rgba(255,255,255,0.08);
   border: 2px solid rgba(255,255,255,0.15);
-  border-radius: 12px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
+  font-size: 24px;
   position: relative;
 }
 
@@ -69,7 +70,7 @@ body {
 
 #ghost {
   position: fixed;
-  font-size: 48px;
+  font-size: 40px;
   pointer-events: none;
   z-index: 100;
   transform: translate(-50%, -50%);
@@ -81,11 +82,11 @@ body {
   position: absolute;
   bottom: 2px;
   right: 4px;
-  font-size: 11px;
+  font-size: 9px;
   background: #ffd700;
   color: #000;
-  border-radius: 8px;
-  padding: 1px 5px;
+  border-radius: 6px;
+  padding: 1px 4px;
   font-weight: bold;
 }
 
