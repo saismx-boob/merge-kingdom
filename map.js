@@ -15,13 +15,11 @@ function renderMap() {
     const card = document.createElement("div");
     card.className = "region-card " + (purified ? "pure" : (locked ? "locked" : "corrupt"));
 
-    // En-tête : icône + nom
     const head = document.createElement("div");
     head.className = "region-head";
     head.innerHTML = '<span class="region-icon">' + r.icon + '</span><span class="region-name">' + dl(r) + '</span>';
     card.appendChild(head);
 
-    // Statut
     const status = document.createElement("div");
     status.className = "region-status";
     if (purified) {
@@ -34,13 +32,11 @@ function renderMap() {
     }
     card.appendChild(status);
 
-    // Bonus
     const bonus = document.createElement("div");
     bonus.className = "region-bonus";
     bonus.textContent = "🎁 " + dl({ fr: r.bonus_fr, en: r.bonus_en });
     card.appendChild(bonus);
 
-    // Lore (visible si débloquée)
     if (!locked) {
       const lore = document.createElement("div");
       lore.className = "region-lore";
@@ -48,7 +44,6 @@ function renderMap() {
       card.appendChild(lore);
     }
 
-    // Action
     const action = document.createElement("div");
     action.className = "region-action";
     if (purified) {
@@ -99,4 +94,5 @@ function purifyRegion(id) {
   save(); render(); renderMap();
   showToast(r.freedEmoji + " " + dl({ fr: r.freed_fr, en: r.freed_en }) +
     t('toast_freed') + dl({ fr: r.bonus_fr, en: r.bonus_en }));
+  setTimeout(() => Story.play('region_' + id), 1000);
 }
