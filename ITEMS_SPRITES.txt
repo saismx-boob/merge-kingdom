@@ -1,0 +1,161 @@
+================================================================
+ LUMO : LES ROUTES DE L'OR — BIBLE DE PRODUCTION : ITEMS & SPRITES
+ (Objets de grille, créatures, ennemis, boutons)
+================================================================
+
+► SPÉCIFICATIONS TECHNIQUES
+- Génération individuelle : 512x512, puis downscale à 128x128 pour
+  l'assemblage de la spritesheet.
+- SPRITESHEET ITEMS : assets/sprites/items.png — 1280x384 px TOTAL,
+  grille stricte de 10 COLONNES x 3 RANGÉES, cellules 128x128,
+  fond transparent. Ordre de gauche à droite : niveau 1 → niveau 10.
+  RANGÉE 0 (haut) = chaîne ÉCO | RANGÉE 1 = CRÉATURES | RANGÉE 2 = TRÉSORS.
+- SPRITESHEET ENNEMIS : assets/sprites/enemies.png — 768x128 px,
+  6 cellules 128x128 dans l'ordre listé en section E.
+
+► RÈGLE DE PROGRESSION VISUELLE (cruciale pour la lisibilité du jeu)
+Chaque niveau doit être VISIBLEMENT plus riche que le précédent :
+Nv1-3 = simple, petit | Nv4-6 = orné, détails dorés | Nv7-9 = aura
+lumineuse + gemmes | Nv10 = forme "divine" avec halo d'éclipse dorée.
+Le joueur doit identifier le niveau d'un coup d'œil sans lire le badge.
+
+► PROMPT MAÎTRE à préfixer :
+"2D flat vector mobile game asset, thick rounded dark outline,
+single object centered, transparent background, golden rim light
+top-left, afro-fantasy style, saturated colors," [prompt spécifique]
+--negative: text, watermark, background scene, blurry, photo, 3D
+
+================================================================
+A. CHAÎNE ÉCO "Richesses" (rangée 0) — l'économie de la Route
+================================================================
+1. Graine d'Ambre : "a single glowing amber seed, small teardrop
+   shape, honey-gold with a tiny sprout of light"
+2. Fleur de Sel : "delicate white salt crystal flower with five
+   translucent petals on a small grey stem, subtle sparkle"
+3. Palmier Doré : "small golden palm tree with amber-frond leaves
+   and two tiny golden dates, terracotta pot base"
+4. Puits de l'Oasis : "round stone oasis well with turquoise water,
+   wooden pulley, small palm leaf roof, turquoise gem glints"
+5. Amphore d'Or : "elegant golden amphora vase with Amazigh
+   geometric red-and-gold band patterns, glowing honey contents"
+6. Grenier de Timgad : "white Roman-Numidian granary building with
+   terracotta roof, golden wheat sheaves spilling from doorway"
+7. Coffre de Tanit : "ornate treasure chest with the Tanit symbol
+   (triangle-circle) embossed in gold on indigo wood, coins inside"
+8. Trésor de Massinissa : "royal Numidian hoard: golden diadem,
+   silver horse figurine, carnelian gems on a purple silk cushion"
+9. Caravane d'Or : "majestic golden camel with flowing radiant mane,
+   carrying gem-studded trade packs, walking on a small golden dune"
+10. Étoile des Deux Rives : "brilliant five-pointed star made of
+    fused gold and indigo crystal, half sun-rays half moon-rays,
+    tiny caravan silhouette orbiting it, divine glow"
+
+================================================================
+B. CHAÎNE CRÉATURES "Esprits-Gardiens" (rangée 1) — l'armée
+================================================================
+Règle commune : pelage/écailles naturels + une MARQUE STELLAIRE
+lumineuse (petite étoile ou croissant) quelque part sur le corps.
+1. Fennec Étoilé : "cute chibi fennec fox with oversized ears, cream
+   fur, tiny golden star marking on forehead, big amber eyes"
+2. Scorpion d'Ifri : "small desert scorpion with amber-obsidian
+   shell, crescent moon marking on its back, raised tail"
+3. Cheval Numide : "sleek Numidian horse mid-gallop, chestnut coat
+   with golden star brand on flank, flowing mane, Roman-style
+   purple saddle cloth"
+4. Crocodile du Fleuve : "river crocodile with emerald scales and
+   golden river-spirit markings, calm ancient eyes, water ripple
+   beneath"
+5. Anansi le Malin : "small clever spider with glossy black body,
+   golden kente-pattern marking on abdomen, mischievous grin,
+   tiny spectacles, silk thread swirl"
+6. Éléphant de Guerre : "war elephant with bronzeNumidian armor
+   plates, golden star on forehead plate, raised trunk, small
+   battle howdah on back"
+7. Bida l'Arc-en-Ciel : "serpent coiled elegantly, iridescent
+   rainbow scales shimmering, gentle golden eyes, tiny golden
+   drums in its coils"
+8. Gurzil le Taureau : "mighty bull with magma-red hide, obsidian
+   horns with golden tips, sun-disc amulet between horns, ember
+   cracks in hide"
+9. Ogun le Forgeron : "compact blacksmith spirit made of living
+   iron and flame, anvil head, hammer arms, forge-fire heart
+   glowing through chest seams"
+10. Lion de Sunjata : "magnificent lion with golden mane flowing
+    like fire, kente-patterned royal sash, calm kingly eyes, small
+    golden crown of baobab leaves, epic divine aura"
+
+================================================================
+C. CHAÎNE TRÉSORS "Ancêtres" (rangée 2) — les boosts magiques
+================================================================
+Règle commune : base indigo profond + or + le symbole de Tanit
+récurrent. Aura magique croissante.
+1. Perle de Tanit : "single lustrous pearl glowing softly on a tiny
+   indigo velvet cushion, golden crescent clasp"
+2. Lanterne de l'Oasis : "small brass lantern with turquoise glass
+   panels, warm flame inside, crescent moon cutout pattern"
+3. Tambour Parlant : "small talking drum with indigo bogolan skin
+   and golden lacing, faint sound-wave runes around it"
+4. Tapis des Contes : "rolled magic carpet with woven golden
+   story-pictograms on indigo, corner tassels, faint glow from
+   between the weaves"
+5. Boussole des Sables : "brass compass with sapphire needle,
+   sand-frosted glass, four small dune gems at cardinal points"
+6. Sceau de Jugurtha : "royal wax-seal stamp with lion-head handle,
+   molten gold seal glowing with resistance symbol script"
+7. Awalé des Ancêtres : "small carved wooden awalé board game with
+   glowing golden seeds in its cups, ancestor faces faintly carved
+   on the legs"
+8. Balance de Tanit : "golden balance scales with Tanit symbol on
+   the beam, one pan holding a tiny sun, the other a tiny moon,
+   perfectly level"
+9. Astrolabe de Tombouctou : "intricate brass astrolabe with
+   rotating star-map rings, turquoise gem pivots, tiny manuscript
+   script etched on the rings, soft golden glow"
+10. Trône des Deux Rives : "small majestic throne, left armrest
+    carved of white Numidian stone, right armrest of dark Sahel
+    wood, indigo-gold cushion, eclipse-dawn halo behind, floating
+    slightly above ground"
+
+================================================================
+D. BOUTONS & UI (formats libres, générer en 256x256)
+================================================================
+- Générateur "Semeuse d'Ambre" : "cute sower woman silhouette
+  throwing glowing amber seeds, amber-orange circular button style
+  with golden border, chibi" 
+- Générateur "Nid d'Esprits" : "cozy nest made of golden branches
+  with one glowing egg, purple-violet circular button style"
+- Générateur "Forge de Kofi" : "small forge with dancing flame and
+  crossed hammers, orange-red circular button style"
+- Racine d'Ombre (cases verrouillées) : "dark gnarled root ball
+  with purple eclipse glow inside cracks, threatening but small,
+  flat vector"
+- Racine déverrouillable (état payé) : "same dark root ball but
+  with a golden padlock glowing in front"
+
+================================================================
+E. SPRITESHEET ENNEMIS (6 cellules 128x128, ordre exact)
+================================================================
+1. Ombre Errante : "wraith-like shadow bat made of torn black cloth
+   ribbons, thin glowing white slit eyes, violet eclipse mark"
+2. Scorpion d'Ombre : "obsidian scorpion with purple eclipse symbol
+   on back, shadow venom dripping from tail, angry pincers"
+3. Serpent du Néant : "void-black serpent, scales with faint purple
+   constellation patterns, hollow white eyes, open fanged maw"
+4. Spectre de Sel : "ghostly humanoid figure crumbling into white
+   salt crystals, hollow dark eyes, salt-dust falling"
+5. Dévorant des Dunes : "massive sand-worm head emerging from dune
+   armor plates, purple eclipse maw-ring, rows of shadow teeth"
+6. Avatar de l'Éclipse : "miniature version of the Eclipse entity:
+   dark void silhouette, purple corona crescent behind head, no
+   face except two thin white eye-slits, crown of broken pages"
+
+================================================================
+F. CHECKLIST DE QUALITÉ AVANT ASSEMBLAGE
+================================================================
+[ ] Fond parfaitement transparent (pas de blanc résiduel)
+[ ] Objet entièrement contenu dans la cellule (marge 8px)
+[ ] Lisibilité testée à 30px de large (taille réelle en jeu)
+[ ] Progression Nv→Nv+1 visuellement évidente
+[ ] Palette cohérente avec la Bible (ambre/indigo/or/terre)
+[ ] Silhouette reconnaissable en contre-jour (test : noircir l'image)
+================================================================
