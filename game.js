@@ -1,7 +1,7 @@
-// ===== LES ROUTES DE L'OR — Moteur (grille, énergie, racines, commandes, XP) =====
+// ===== LES ROUTES DE L'OR — Moteur =====
 
-const SIZE_COLS = 7, SIZE_ROWS = 7, SIZE = SIZE_COLS * SIZE_ROWS; // 49 cases
-const ENERGY = { max: 80, regenMs: 45000, start: 40 };
+const SIZE_COLS = 7, SIZE_ROWS = 7, SIZE = SIZE_COLS * SIZE_ROWS;
+const ENERGY = { max: 80, baseRegenMs: 45000, start: 40 };
 const BUY_ENERGY = { amount: 10, cost: 40 };
 const MAX_LEVEL = 10;
 const SAVE_KEY = "routesDeLor_v1";
@@ -22,15 +22,15 @@ function defaultState() {
     wave: 1, seenIntro: false,
     grid: startingGrid(),
     locks: DATA.lockMap.flat(),
+    unlockedRegions: ["timgad"],
+    purifiedRegions: [],
     orders: [0, 1, 2]
   };
 }
 
 let state = load() || defaultState();
 
-function save() {
-  localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-}
+function save() { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
 function load() {
   try {
     const s = JSON.parse(localStorage.getItem(SAVE_KEY));
@@ -38,17 +38,25 @@ function load() {
     const d = defaultState();
     for (const k in d) if (s[k] === undefined) s[k] = d[k];
     if (!Array.isArray(s.grid) || s.grid.length !== SIZE) s.grid = startingGrid();
-    // Migration des sauvegardes sans racines : on crée la carte,
-    // mais on libère toute case où un objet existe déjà
     if (!Array.isArray(s.locks) || s.locks.length !== SIZE) {
       s.locks = DATA.lockMap.flat();
       for (let i = 0; i < SIZE; i++) if (s.grid[i]) s.locks[i] = 0;
     }
+    if (!Array.isArray(s.unlockedRegions)) s.unlockedRegions = ["timgad"];
+    if (!Array.isArray(s.purifiedRegions)) s.purifiedRegions = [];
     if (!Array.isArray(s.orders) || s.orders.length !== 3 ||
         s.orders.some(i => i < 0 || i >= DATA.orders.length)) s.orders = [0, 1, 2];
     return s;
   } catch { return null; }
 }
+
+// ----- BONUS DES RÉGIONS PURIFIÉES -----
+function pur(id) { return state.purifiedRegions.includes(id); }
+function goldMult() { let m = 1; if (pur("timgad")) m *= 1.10; if (pur("trone")) m *= 1.20; return m; }
+function xpMult()   { let m = 1; if (pur("wagadu")) m *= 1.15; if (pur("trone")) m *= 1.20; return m; }
+function atkMult()  { return pur("fleuve") ? 1.15 : 1; }
+function energyRegenMs() { return ENERGY.baseRegenMs * (pur("oasis") ? 0.75 : 1); }
+function hasBeatenWave(n) { return state.wave > n; }
 
 // ----- XP / Niveau joueur -----
 function xpNeeded(level) { return 20 + (level - 1) * 25; }
@@ -57,18 +65,16 @@ function playerLevel() {
   while (rem >= xpNeeded(lvl) && lvl < 20) { rem -= xpNeeded(lvl); lvl++; }
   return lvl;
 }
-function addXp(n) { state.xp += n; }
+function addXp(n) { state.xp += Math.round(n * xpMult()); }
 
 // ----- Énergie -----
 function tickEnergy() {
   if (state.energy >= ENERGY.max) { state.energyTs = Date.now(); return; }
-  const gained = Math.floor((Date.now() - state.energyTs) / ENERGY.regenMs);
+  const gained = Math.floor((Date.now() - state.energyTs) / energyRegenMs());
   if (gained > 0) {
     state.energy = Math.min(ENERGY.max, state.energy + gained);
-    state.energyTs += gained * ENERGY.regenMs;
-    save();
-    renderHud();
-    updateGenButtons();
+    state.energyTs += gained * energyRegenMs();
+    save(); renderHud(); updateGenButtons();
   }
 }
 setInterval(tickEnergy, 2000);
@@ -77,20 +83,15 @@ setInterval(tickEnergy, 2000);
 function dl(o) { return currentLang === 'fr' ? o.fr : o.en; }
 
 function rollDropLevel() {
-  const r = Math.random();
-  let acc = 0;
+  const r = Math.random(); let acc = 0;
   for (const d of DATA.dropTable) { acc += d.chance; if (r < acc) return d.level; }
   return 1;
 }
-
 function emptyCells() {
   const out = [];
-  for (let i = 0; i < SIZE; i++) {
-    if (!state.grid[i] && !state.locks[i]) out.push(i);
-  }
+  for (let i = 0; i < SIZE; i++) if (!state.grid[i] && !state.locks[i]) out.push(i);
   return out;
 }
-
 function countItems(chain, level) {
   return state.grid.filter(it => it && it.chain === chain && it.level === level).length;
 }
@@ -106,10 +107,55 @@ function getUtilityBoost() {
     it && it.chain === "utility" ? sum + DATA.chains.utility.items[it.level - 1].boost : sum, 0);
 }
 
+// ----- SPRITESHEETS (détection automatique) -----
+const SPR = { items: false, enemies: false };
+function initSprites() {
+  const s = DATA.sprites;
+  if (s && s.itemsSheet) {
+    const im = new Image();
+    im.onload = () => { SPR.items = true; render(); };
+    im.src = s.itemsSheet;
+  }
+  if (s && s.enemiesSheet) {
+    const im2 = new Image();
+    im2.onload = () => { SPR.enemies = true; };
+    im2.src = s.enemiesSheet;
+  }
+}
+function applyItemSprite(el, chain, level) {
+  const s = DATA.sprites;
+  const row = s.rowOrder.indexOf(chain);
+  const col = level - 1;
+  el.style.backgroundImage = "url('" + s.itemsSheet + "')";
+  el.style.backgroundSize = (s.cols * 100) + "% " + (s.rows * 100) + "%";
+  el.style.backgroundPosition = (col / (s.cols - 1) * 100) + "% " + (row / (s.rows - 1) * 100) + "%";
+  el.style.backgroundRepeat = "no-repeat";
+  el.style.backgroundSizeContains = "";
+}
+
+// ----- Fond dynamique selon la région purifiée -----
+function applyRegionBg() {
+  const layer = document.getElementById("bg-layer");
+  let r = DATA.regions[0];
+  DATA.regions.forEach(rg => { if (pur(rg.id)) r = rg; });
+  layer.style.background = r.gradient;
+  layer.style.backgroundImage = "none";
+  if (r.bg) {
+    const im = new Image();
+    im.onload = () => {
+      layer.style.backgroundImage = "url('" + r.bg + "')";
+      layer.style.backgroundSize = "cover";
+      layer.style.backgroundPosition = "center";
+    };
+    im.src = r.bg;
+  }
+}
+
 // ----- Racines de l'Éclipse -----
 function lockCost(req) { return DATA.lockBaseCost * Math.pow(2, req - 1); }
 
 let pendingUnlockPops = [];
+let selectedLock = -1;
 function checkAdjacentUnlocks(idx, level) {
   const col = idx % SIZE_COLS;
   const nbs = [];
@@ -127,7 +173,6 @@ function checkAdjacentUnlocks(idx, level) {
   if (pendingUnlockPops.length) addXp(2 * pendingUnlockPops.length);
 }
 
-let selectedLock = -1;
 function tapLock(i) {
   if (state.locks[i] <= 0) return;
   if (selectedLock === i) {
@@ -154,6 +199,7 @@ function render() {
   renderBoard();
   renderOrders();
   updateGenButtons();
+  applyRegionBg();
 }
 
 function renderHud() {
@@ -183,7 +229,6 @@ function renderBoard() {
     cell.dataset.index = i;
 
     if (state.locks[i] > 0 && !item) {
-      // ===== Case verrouillée par une Racine =====
       cell.classList.add("locked");
       const req = state.locks[i];
       const fog = document.createElement("div");
@@ -206,13 +251,17 @@ function renderBoard() {
       if (item.chain === 'eco') c.classList.add('anim-eco');
       if (item.chain === 'utility') c.classList.add('anim-util');
 
-      c.textContent = data.emoji;
-      if (data.img) {
-        const img = document.createElement("img");
-        img.src = data.img;
-        img.alt = "";
-        img.onload = function () { c.textContent = ''; c.appendChild(img); };
-        c.appendChild(img);
+      if (SPR.items) {
+        applyItemSprite(c, item.chain, item.level);
+      } else {
+        c.textContent = data.emoji;
+        if (data.img) {
+          const img = document.createElement("img");
+          img.src = data.img;
+          img.alt = "";
+          img.onload = function () { c.textContent = ''; c.appendChild(img); };
+          c.appendChild(img);
+        }
       }
 
       const badge = document.createElement("span");
@@ -226,7 +275,6 @@ function renderBoard() {
   }
 }
 
-// Pop "post-render" (+🪙, 🌿 Libre) — survit au re-rendu
 function addPop(i, text) {
   const cell = board.children[i];
   if (!cell) return;
@@ -242,7 +290,9 @@ function spawnFromGenerator(chain) {
   const empties = emptyCells();
   if (state.energy < 1 || !empties.length) return;
 
-  state.energy -= 1;
+  const freeTap = pur("foret") && Math.random() < 0.20;
+  if (!freeTap) state.energy -= 1;
+
   let idx = empties[Math.floor(Math.random() * empties.length)];
   state.grid[idx] = { chain, level: rollDropLevel() };
 
@@ -256,6 +306,7 @@ function spawnFromGenerator(chain) {
 
   save(); render();
   createSparkles(board.children[idx]);
+  if (freeTap) addPop(idx, "🎁");
 }
 
 function renderGenerators() {
@@ -331,7 +382,7 @@ function renderOrders() {
     foot.className = "order-foot";
     const reward = document.createElement("span");
     reward.className = "order-reward";
-    reward.textContent = "+" + o.reward.coins + "🪙 +" + o.reward.xp + "⭐";
+    reward.textContent = "+" + Math.round(o.reward.coins * goldMult()) + "🪙 +" + o.reward.xp + "⭐";
     const btn = document.createElement("button");
     btn.className = "claim-btn";
     btn.textContent = t('claim');
@@ -350,7 +401,7 @@ function claimOrder(slot) {
   const ok = o.requires.every(r => countItems(r.chain, r.level) >= r.qty);
   if (!ok) return;
   o.requires.forEach(r => removeItems(r.chain, r.level, r.qty));
-  state.coins += o.reward.coins;
+  state.coins += Math.round(o.reward.coins * goldMult());
   addXp(o.reward.xp);
   state.orders[slot] = pickOrder();
   save(); render();
@@ -379,15 +430,26 @@ function attachDrag(el) {
   el.addEventListener("pointerdown", e => {
     dragFrom = +el.dataset.index;
     el.classList.add("dragging");
-    const img = el.querySelector('img');
-    if (img) {
+    if (SPR.items) {
       ghost.textContent = '';
-      ghost.style.backgroundImage = "url('" + img.src + "')";
+      ghost.style.backgroundImage = "url('" + DATA.sprites.itemsSheet + "')";
+      const s = DATA.sprites;
+      const row = s.rowOrder.indexOf(state.grid[dragFrom].chain);
+      const col = state.grid[dragFrom].level - 1;
+      ghost.style.backgroundSize = (s.cols * 56) + "px " + (s.rows * 56) + "px";
+      ghost.style.backgroundPosition = (-col * 56) + "px " + (-row * 56) + "px";
       ghost.style.width = '56px'; ghost.style.height = '56px';
     } else {
-      ghost.textContent = el.textContent;
-      ghost.style.backgroundImage = 'none';
-      ghost.style.width = 'auto'; ghost.style.height = 'auto';
+      const img = el.querySelector('img');
+      if (img) {
+        ghost.textContent = '';
+        ghost.style.backgroundImage = "url('" + img.src + "')";
+        ghost.style.width = '56px'; ghost.style.height = '56px';
+      } else {
+        ghost.textContent = el.textContent;
+        ghost.style.backgroundImage = 'none';
+        ghost.style.width = 'auto'; ghost.style.height = 'auto';
+      }
     }
     ghost.style.display = "block";
     moveGhost(e);
@@ -404,11 +466,8 @@ document.addEventListener("pointerup", e => {
   const target = document.elementFromPoint(e.clientX, e.clientY)?.closest(".cell");
   if (target) {
     const idx = +target.dataset.index;
-    if (idx === dragFrom) {
-      collectEco(idx);
-    } else {
-      tryMerge(dragFrom, idx);
-    }
+    if (idx === dragFrom) collectEco(idx);
+    else tryMerge(dragFrom, idx);
   }
   endDrag();
 });
@@ -425,7 +484,6 @@ function endDrag() {
   document.querySelectorAll(".highlight").forEach(c => c.classList.remove("highlight"));
   selectedLock = -1;
   render();
-  // Juice post-render : popups de libération + étincelles de fusion
   if (pendingUnlockPops.length) {
     pendingUnlockPops.forEach(n => addPop(n, t('unlocked_pop')));
     pendingUnlockPops = [];
@@ -453,24 +511,20 @@ function highlightTargets() {
 function tryMerge(a, b) {
   const itemA = state.grid[a], itemB = state.grid[b];
   if (!itemA || a === b) return;
-  if (state.locks[b] > 0) return; // case verrouillée : drop impossible
+  if (state.locks[b] > 0) return;
 
   if (!itemB) {
-    // Déplacement vers une case vide libre
     state.grid[b] = itemA;
     state.grid[a] = null;
     return;
   }
 
   if (itemA.chain === itemB.chain && itemA.level === itemB.level && itemA.level < MAX_LEVEL) {
-    // FUSION
-    const newLevel = itemA.level + 1;
-    state.grid[b] = { chain: itemA.chain, level: newLevel };
+    state.grid[b] = { chain: itemA.chain, level: itemA.level + 1 };
     state.grid[a] = null;
     lastMergeCell = b;
-    checkAdjacentUnlocks(b, newLevel);
+    checkAdjacentUnlocks(b, itemA.level + 1);
   } else {
-    // Échange de place
     state.grid[a] = itemB;
     state.grid[b] = itemA;
   }
@@ -492,16 +546,28 @@ function createSparkles(container) {
   }
 }
 
-// ----- Navigation / boutons -----
+// ----- Toast -----
+let toastTimer = null;
+function showToast(msg) {
+  const tEl = document.getElementById("toast");
+  tEl.textContent = msg;
+  tEl.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => tEl.classList.remove("show"), 2800);
+}
+
+// ----- Navigation -----
 function switchScreen(name) {
-  document.getElementById("screen-merge").classList.toggle("active", name === "merge");
-  document.getElementById("screen-battle").classList.toggle("active", name === "battle");
-  document.getElementById("nav-merge").classList.toggle("active", name === "merge");
-  document.getElementById("nav-battle").classList.toggle("active", name === "battle");
+  ["merge", "map", "battle"].forEach(n => {
+    document.getElementById("screen-" + n).classList.toggle("active", n === name);
+    document.getElementById("nav-" + n).classList.toggle("active", n === name);
+  });
+  if (name === "map") renderMap();
   if (name === "battle") setupBattle();
 }
 
 document.getElementById("nav-merge").addEventListener("click", () => switchScreen("merge"));
+document.getElementById("nav-map").addEventListener("click", () => switchScreen("map"));
 document.getElementById("nav-battle").addEventListener("click", () => switchScreen("battle"));
 document.getElementById("lang-toggle").addEventListener("click",
   () => setLanguage(currentLang === "fr" ? "en" : "fr"));
@@ -521,6 +587,7 @@ document.getElementById("story-btn").addEventListener("click", showStory);
 document.getElementById("story-close").addEventListener("click", closeStory);
 
 // ----- Initialisation -----
+initSprites();
 renderGenerators();
 setLanguage(currentLang);
 render();
@@ -529,4 +596,3 @@ if (!state.seenIntro) {
   state.seenIntro = true;
   save();
 }
-  
