@@ -4,6 +4,7 @@ const TRANSLATIONS = {
   fr: {
     title: "Lumo : Les Routes de l'Or",
     nav_merge: "🏰 Royaume",
+    nav_map: "🗺️ Route",
     nav_battle: "⚔️ Combat",
     orders_title: "📜 Commandes de la Caravane",
     claim: "Livrer",
@@ -25,13 +26,25 @@ const TRANSLATIONS = {
     log_boost_end: "% ATK",
     lvl: "Nv",
     unlocked_pop: "🌿 Libre ! +2⭐",
+    map_title: "🗺️ La Route de l'Or",
+    map_progress: "Régions purifiées",
+    region_locked: "🔒 Terre inconnue",
+    region_corrupt: "🌑 Sous l'Éclipse",
+    region_pure: "✨ Purifiée",
+    btn_unlock: "Fonder le relais",
+    btn_purify: "✨ Purifier",
+    btn_need_wave: "Bats la Vague",
+    req_level: "Niveau requis",
+    toast_freed: " rejoint la caravane ! Bonus actif : ",
+    toast_unlocked: "Relais fondé ! Purifie maintenant le Prêtre.",
     story_title: "📖 L'Histoire des Deux Rives",
     story_close: "Prendre la route ➜",
-    story: "<p>Il y a mille ans, les rois de <b>Numidie</b> — Massinissa, puis Jugurtha — unirent les tribus du Nord, et leur cavalerie fut célèbre jusqu'à Rome.</p><p>Au Sud, au-delà du sable, les empires du Sahel — <b>Wagadu</b>, le pays de Sunjata — gardaient les routes de l'or et du sel.</p><p>Entre les deux rives, des caravanes tissèrent un réseau d'oasis, de lanternes et de tambours : <b>les Routes de l'Or</b>.</p><p>Mais l'Éclipse est venue. Les Ombres dévorent les puits, coupent les pistes, éteignent les lanternes — et leurs <b>Racines</b> étouffent les terres.</p><p>Toi, <b>Lumo</b>, guide des caravanes, descendante des deux rives, restaure le Réseau : brise les Racines, fusionne les dons des Ancêtres, réponds aux commandes des Grands Noms, et chasse l'Éclipse de la piste du sel.</p>"
+    story: "<p>Il y a mille ans, les rois de <b>Numidie</b> — Massinissa, puis Jugurtha — unirent les tribus du Nord, et leur cavalerie fut célèbre jusqu'à Rome.</p><p>Au Sud, au-delà du sable, les empires du Sahel — <b>Wagadu</b>, le pays de Sunjata — gardaient les routes de l'or et du sel.</p><p>Entre les deux rives, des caravanes tissèrent un réseau d'oasis, de lanternes et de tambours : <b>les Routes de l'Or</b>.</p><p>Mais l'Éclipse est venue. Ses prêtres corrompent les régions, ses Racines étouffent les terres.</p><p>Toi, <b>Lumo</b>, guide des caravanes, descendante des deux rives, restaure le Réseau : fonde des relais, purifie les Prêtres, fusionne les dons des Ancêtres — et que l'Aube se lève sur la piste du sel.</p>"
   },
   en: {
     title: "Lumo: The Gold Routes",
     nav_merge: "🏰 Kingdom",
+    nav_map: "🗺️ Route",
     nav_battle: "⚔️ Battle",
     orders_title: "📜 Caravan Orders",
     claim: "Deliver",
@@ -53,9 +66,20 @@ const TRANSLATIONS = {
     log_boost_end: "% ATK",
     lvl: "Lv",
     unlocked_pop: "🌿 Free! +2⭐",
+    map_title: "🗺️ The Gold Route",
+    map_progress: "Purified regions",
+    region_locked: "🔒 Unknown land",
+    region_corrupt: "🌑 Under the Eclipse",
+    region_pure: "✨ Purified",
+    btn_unlock: "Found the waystation",
+    btn_purify: "✨ Purify",
+    btn_need_wave: "Beat Wave",
+    req_level: "Required level",
+    toast_freed: " joins the caravan! Bonus active: ",
+    toast_unlocked: "Waystation founded! Now purify the Priest.",
     story_title: "📖 The Tale of Two Shores",
     story_close: "Hit the road ➜",
-    story: "<p>A thousand years ago, the kings of <b>Numidia</b> — Massinissa, then Jugurtha — united the northern tribes, and their cavalry was famed as far as Rome.</p><p>To the South, beyond the sand, the Sahel empires — <b>Wagadu</b>, land of Sunjata — guarded the routes of gold and salt.</p><p>Between both shores, caravans wove a network of oases, lanterns and drums: <b>the Gold Routes</b>.</p><p>But the Eclipse has come. Shadows devour the wells, cut the tracks, put out the lanterns — and their <b>Roots</b> choke the lands.</p><p>You, <b>Lumo</b>, caravan guide, child of both shores, must restore the Network: break the Roots, merge the gifts of the Ancestors, answer the orders of the Great Names, and chase the Eclipse off the salt road.</p>"
+    story: "<p>A thousand years ago, the kings of <b>Numidia</b> — Massinissa, then Jugurtha — united the northern tribes, and their cavalry was famed as far as Rome.</p><p>To the South, beyond the sand, the Sahel empires — <b>Wagadu</b>, land of Sunjata — guarded the routes of gold and salt.</p><p>Between both shores, caravans wove a network of oases, lanterns and drums: <b>the Gold Routes</b>.</p><p>But the Eclipse has come. Its priests corrupt the regions, its Roots choke the lands.</p><p>You, <b>Lumo</b>, caravan guide, child of both shores, must restore the Network: found waystations, purify the Priests, merge the gifts of the Ancestors — and let the Dawn rise over the salt road.</p>"
   }
 };
 
@@ -71,14 +95,17 @@ function setLanguage(lang) {
   document.getElementById("lang-label").textContent = lang.toUpperCase();
   document.title = t('title');
   document.getElementById("nav-merge").textContent = t('nav_merge');
+  document.getElementById("nav-map").textContent = t('nav_map');
   document.getElementById("nav-battle").textContent = t('nav_battle');
   document.getElementById("orders-title").textContent = t('orders_title');
   document.getElementById("hint").textContent = t('hint');
   document.getElementById("fight-btn").textContent = t('btn_fight');
+  document.getElementById("map-title").textContent = t('map_title');
   document.getElementById("story-title").textContent = t('story_title');
   document.getElementById("story-text").innerHTML = t('story');
   document.getElementById("story-close").textContent = t('story_close');
   if (typeof render === 'function') render();
   if (typeof renderGenerators === 'function') renderGenerators();
+  if (typeof renderMap === 'function') renderMap();
   if (typeof setupBattle === 'function') setupBattle();
 }
